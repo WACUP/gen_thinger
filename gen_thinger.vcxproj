@@ -160,7 +160,6 @@ REM ..\sdk\lng_generator\lng_generator "$(TargetDir)\$(ProjectName).dll" /build 
     <ResourceCompile Include="dialog.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ctrlskin.h" />
     <ClInclude Include="embedwnd.h" />
     <ClInclude Include="iconlist.h" />
     <ClInclude Include="NxSThingerAPI.h" />

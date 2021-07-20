@@ -25,17 +25,16 @@
 #define IDC_LEFTSCROLLBTN               1020
 #define IDC_RIGHTSCROLLBTN              1021
 #define IDC_STATUS                      1022
-#define ID__USELIGHTNINGBOLT            40001
-#define ID__SHOWSTATUSBAR               40002
-#define ID__DIMICONSWHENSCROLLING       40003
-#define ID__ABOUT                       40004
+#define ID__SHOWSTATUSBAR               40001
+#define ID__DIMICONSWHENSCROLLING       40002
+#define ID__ABOUT                       40003
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        123
-#define _APS_NEXT_COMMAND_VALUE         40005
+#define _APS_NEXT_COMMAND_VALUE         40004
 #define _APS_NEXT_CONTROL_VALUE         1041
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
