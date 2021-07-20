@@ -50,7 +50,7 @@ extern "C" {
 typedef struct _NxSThingerIconStruct {
   DWORD dwFlags; /* NTIS_* flags */
   UINT uIconId; /* Only used for NTIS_MODIFY and NTIS_DELETE flags */
-  LPTSTR lpszDesc;
+  LPCWSTR lpszDesc;
   /* These are HBITMAP if the NTIS_BITMAP flag is used. */
   union {
 	HICON hIcon;

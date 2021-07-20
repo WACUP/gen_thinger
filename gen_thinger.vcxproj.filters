@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{354e906f-4186-481d-8dad-a8c5a2db2e85}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{c1986b7a-0c42-44b2-a4b8-4104987670ef}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{30eae3c4-4c73-4913-a8ae-479f21a47dd1}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="External Libraries">
+      <UniqueIdentifier>{0da58b5e-4833-46ea-a5e6-47da155ffdea}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ctrlskin.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iconlist.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="embedwnd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="thinger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ctrlskin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iconlist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NxSThingerAPI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="embedwnd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="new_h1.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resources\icon_ml.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resources\icon_ml_h.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resources\icon_new.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resources\icon_new_h.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resources\icon_pledit.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resources\icon_pledit_h.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resources\icon_prefs.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resources\icon_prefs_h.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resources\icon_video.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resources\icon_video_h.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resources\icon_vis.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resources\icon_vis_h.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="gen_thinger.html">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gen_thinger_setup.nsi">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="readme.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="dialog.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,70 +13,83 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Norwegian (Bokmal) resources
+// Norwegian, Bokmål (Norway) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NOR)
-#ifdef _WIN32
 LANGUAGE LANG_NORWEGIAN, SUBLANG_NORWEGIAN_BOKMAL
 #pragma code_page(1252)
-#endif //_WIN32
 
+#ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
-// Dialog
+// TEXTINCLUDE
 //
 
-THINGERDLG DIALOG DISCARDABLE  0, 0, 171, 34
-STYLE WS_CHILD | WS_VISIBLE
-FONT 8, "MS Sans Serif"
+1 TEXTINCLUDE 
 BEGIN
-    PUSHBUTTON      "<",IDC_LEFTSCROLLBTN,0,0,10,24
-    PUSHBUTTON      ">",IDC_RIGHTSCROLLBTN,160,0,10,24
-    EDITTEXT        IDC_EDIT1,0,25,170,9,ES_AUTOHSCROLL | ES_READONLY | NOT 
-                    WS_BORDER
+    "resource.h\0"
 END
 
-CONFIG DIALOGEX 0, 0, 192, 226
-STYLE DS_MODALFRAME | DS_NOFAILCREATE | DS_CENTER | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
-EXSTYLE WS_EX_TOOLWINDOW
-CAPTION "Thinger Configuration"
-FONT 8, "MS Sans Serif"
+2 TEXTINCLUDE 
 BEGIN
-    DEFPUSHBUTTON   "OK",1,75,205,50,14
-    PUSHBUTTON      "Cancel",2,131,205,50,14
-    GROUPBOX        "General",-1,5,5,180,35
-    CONTROL         "Enable (requires restart of Winamp)",1018,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,15,126,10
-    GROUPBOX        "Appearance",-1,5,45,180,45
-    CONTROL         "Show statusbar (default = checked)",1019,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,55,160,10
-    GROUPBOX        "About",-1,5,95,180,105
-    LTEXT           "Written by Saivert",-1,15,150,57,8
-    LTEXT           "NxS Thinger - for that Winamp3 feeling.",-1,15,105,162,
-                    11
-    LTEXT           "Homepage:",-1,15,161,38,8
-    CONTROL         "http://inthegray.com/saivert/",1032,"NxSWebLink_2347890",
-                    WS_TABSTOP,15,171,161,10
-    CONTROL         "Use lightning bolt to toggle Thinger",1033,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,25,125,10
-    CONTROL         "ReadMe",1034,"NxSWebLink_2347890",WS_TABSTOP,15,184,161,
-                    10
-    CTEXT           "Remember those who lost their lives because of the terrible tsunami in south-east asia.",
-                    0,14,120,163,23
-    CONTROL         "Dim icons when scrolling",IDC_DIMWHENSCROLLCB,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,65,160,10
-    CONTROL         "Skin this configuration dialog",IDC_SKINCONFIG,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,75,160,10
+    "#include ""afxres.h""\r\n"
+    "\0"
 END
 
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Norwegian, Bokmål (Norway) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United Kingdom) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
+#pragma code_page(1252)
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
 //
 
-MENU1 MENU DISCARDABLE 
+#if defined(APSTUDIO_INVOKED) || !defined(_DEBUG)
+MENU1 MENU
+BEGIN
+    POPUP ""
+    BEGIN
+        POPUP "Show built-in icons"
+        BEGIN
+            MENUITEM "&Playlist Editor",            20
+            MENUITEM "&Media Library",              21
+            MENUITEM "&Video",                      22
+            MENUITEM "Toggle V&isualisation",       23
+            MENUITEM "Toggle P&references",         24
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Show &statusbar",             ID__SHOWSTATUSBAR
+        MENUITEM "&Dim icons when scrolling",   ID__DIMICONSWHENSCROLLING
+        MENUITEM SEPARATOR
+        MENUITEM "Use &lightning bolt to toggle Thinger", ID__USELIGHTNINGBOLT
+        MENUITEM SEPARATOR
+        MENUITEM "&About...",                   ID__ABOUT
+    END
+END
+#endif
+
+#if defined(APSTUDIO_INVOKED) || defined(_DEBUG)
+#if defined(APSTUDIO_INVOKED)
+MENU1$(_DEBUG) MENU
+#else
+MENU1 MENU
+#endif
 BEGIN
     POPUP "contextmenu"
     BEGIN
@@ -96,78 +109,38 @@ BEGIN
         MENUITEM "Config...",                   1
     END
 END
+#endif
 
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// DESIGNINFO
+// PNG
 //
 
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
-BEGIN
-    "THINGERDLG", DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 164
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 27
-    END
+IDB_PLEDIT              PNG                     ".\\resources\\icon_pledit.png"
 
-    "CONFIG", DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 159
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 179
-    END
-END
-#endif    // APSTUDIO_INVOKED
+IDB_ML                  PNG                     ".\\resources\\icon_ml.png"
 
+IDB_VIS                 PNG                     ".\\resources\\icon_vis.png"
 
-#ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// TEXTINCLUDE
-//
+IDB_VIDEO               PNG                     ".\\resources\\icon_video.png"
 
-1 TEXTINCLUDE DISCARDABLE 
-BEGIN
-    "resource.h\0"
-END
+IDB_VIS_H               PNG                     ".\\resources\\icon_vis_h.png"
 
-2 TEXTINCLUDE DISCARDABLE 
-BEGIN
-    "#include ""afxres.h""\r\n"
-    "\0"
-END
+IDB_ML_H                PNG                     ".\\resources\\icon_ml_h.png"
 
-3 TEXTINCLUDE DISCARDABLE 
-BEGIN
-    "\r\n"
-    "\0"
-END
+IDB_PLEDIT_H            PNG                     ".\\resources\\icon_pledit_h.png"
 
-#endif    // APSTUDIO_INVOKED
+IDB_VIDEO_H             PNG                     ".\\resources\\icon_video_h.png"
 
+IDB_PREFS_H             PNG                     ".\\resources\\icon_prefs_h.png"
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// Bitmap
-//
+IDB_PREFS               PNG                     ".\\resources\\icon_prefs.png"
 
-IDB_PLEDIT              BITMAP  DISCARDABLE     "icon_pledit.bmp"
-IDB_ML                  BITMAP  DISCARDABLE     "icon_ml.bmp"
-IDB_VIS                 BITMAP  DISCARDABLE     "icon_vis.bmp"
-IDB_VIDEO               BITMAP  DISCARDABLE     "icon_video.bmp"
-IDB_VIS_H               BITMAP  DISCARDABLE     "icon_vis_h.bmp"
-IDB_ML_H                BITMAP  DISCARDABLE     "icon_ml_h.bmp"
-IDB_PLEDIT_H            BITMAP  DISCARDABLE     "icon_pledit_h.bmp"
-IDB_VIDEO_H             BITMAP  DISCARDABLE     "icon_video_h.bmp"
-IDB_PREFS_H             BITMAP  DISCARDABLE     "icon_prefs.h.bmp"
-IDB_PREFS               BITMAP  DISCARDABLE     "icon_prefs.bmp"
-IDB_NEW_H               BITMAP  DISCARDABLE     "icon_new_h.bmp"
-IDB_NEW                 BITMAP  DISCARDABLE     "icon_new.bmp"
+IDB_NEW_H               PNG                     ".\\resources\\icon_new_h.png"
+
+IDB_NEW                 PNG                     ".\\resources\\icon_new.png"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -176,9 +149,71 @@ IDB_NEW                 BITMAP  DISCARDABLE     "icon_new.bmp"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_NEW_H               ICON    DISCARDABLE     "icon1.ico"
-IDI_NEW                 ICON    DISCARDABLE     "new_h1.ico"
-#endif    // Norwegian (Bokmal) resources
+IDI_NEW_H               ICON                    "icon1.ico"
+
+IDI_NEW                 ICON                    "new_h1.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,0
+ PRODUCTVERSION 1,0,0,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080004b0"
+        BEGIN
+            VALUE "CompanyName", "WACUP (WinAmp Community Update Project)"
+            VALUE "FileDescription", "Winamp General Purpose Plug-in"
+            VALUE "FileVersion", "1.0.0.0"
+            VALUE "InternalName", "gen_thinger.dll"
+            VALUE "LegalCopyright", "Copyright © 2004-5 Saivert, Addtional updates by Darren Owen aka DrO (2021)"
+            VALUE "OriginalFilename", "gen_thinger.dll"
+            VALUE "ProductName", "Thinger"
+            VALUE "ProductVersion", "1.0.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x800, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_PLUGIN_NAME         "Thinger v%s"
+    IDS_DO_YOU_ALSO_WANT_TO_REMOVE_SETTINGS 
+                            "Do you also want to remove the saved settings for this plug-in?"
+    IDS_ABOUT_STRING        "This provides the 'thinger' window for those wanting a\nbit of the Winamp3 era irrespective of the skin used.\n\nPlug-in originally by saivert (https://saivert.com/)\n\nAdditional updates for WACUP by Darren Owen aka DrO\n\nBuild date: %s"
+    IDS_GHK_STRING          "Thinger: Toggle Thinger window"
+    IDS_NXS_THINGER         "Thinger"
+END
+
+STRINGTABLE
+BEGIN
+    65535                   "{9D97A8C3-01E2-4648-9878-64DDD164E63A}"
+END
+
+#endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
