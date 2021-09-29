@@ -38,7 +38,7 @@
 
 /* global data */
 #define PLUGIN_INISECTION TEXT("Thinger")
-#define PLUGIN_VERSION "1.0.1"
+#define PLUGIN_VERSION "1.0.3"
 
 // Menu ID's
 UINT WINAMP_NXS_THINGER_MENUID = 48882;
@@ -92,6 +92,7 @@ static HWND hWndThinger = NULL;
 /* Thinger window */
 static embedWindowState embed = { 0 };
 static genHotkeysAddStruct genhotkey = { 0 };
+static UINT hotkey_ipc = (UINT)-1;
 
 LRESULT CALLBACK ThingerWndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK GenWndSubclass(HWND, UINT, WPARAM, LPARAM, UINT_PTR, DWORD_PTR);
@@ -376,6 +377,16 @@ void UpdateStatusFont(void) {
 				(WPARAM)g_hStatusFont, MAKELPARAM(1, 0));
 }
 
+LRESULT HotkeyCallback(HWND hWnd, const UINT uMsg, const
+					   WPARAM wParam, const LPARAM lParam)
+{
+	if (uMsg == (UINT)hotkey_ipc)
+	{
+		PostMessage(hWnd, WM_COMMAND, WINAMP_NXS_THINGER_MENUID, 0);
+	}
+	return 0;
+}
+
 /* to avoid subclassing this will get a reasonable set of IPC messages */
 void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 						 WPARAM wParam, const LPARAM lParam)
@@ -428,7 +439,7 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 				GetWindowRect(hWndThinger, &r);
 
 				MLSKINWINDOW sw = { 0 };
-				sw.style = /*SWS_USESKINFONT |*/ SWS_USESKINCOLORS | SWS_USESKINCURSORS;
+				sw.style = /*SWS_USESKINFONT |*/ SWS_COMMON_NO_FONT;
 				sw.skinType = SKINNEDWND_TYPE_BUTTON;
 
 				HWND button = CreateWindow(WC_BUTTON, L"<", WS_CHILD | WS_TABSTOP |
@@ -479,14 +490,14 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 			{
 				SetEmbeddedWindowMinimizedMode(hWndThinger, TRUE);
 			}
-			else
+			/*else
 			{
 				// only show on startup if under a classic skin and was set
 				if (visible)
 				{
 					PostMessage(hWndThinger, WM_USER + 102, 0, 0);
 				}
-			}
+			}*/
 
 			/* Initialize our Icon List */
 			IconList_Init();
@@ -529,19 +540,17 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 
 			AddIcon(ntis, THINGER_PREFS, TEXT("Toggle Preferences"), IDC_PREFS, IDB_PREFS, IDB_PREFS_H);
 
-			/* Get message value */
-			UINT genhotkeys_add_ipc = RegisterIPC((WPARAM)&"GenHotkeysAdd");
-
-			/* Set up the genHotkeysAddStruct */
-			genhotkey.name = (char*)WASABI_API_LNGSTRINGW_DUP(IDS_GHK_STRING);
-			genhotkey.flags = HKF_NOSENDMSG | HKF_UNICODE_NAME;
-			genhotkey.id = "NxSThingerToggle";
-			// get this to send a WM_COMMAND message so we don't have to do anything specific
-			genhotkey.uMsg = WM_COMMAND;
-			genhotkey.wParam = MAKEWPARAM(WINAMP_NXS_THINGER_MENUID, 0);
-			genhotkey.lParam = 0;
-			genhotkey.wnd = g_thingerwnd;
-			PostMessage(plugin.hwndParent, WM_WA_IPC, (WPARAM)&genhotkey, genhotkeys_add_ipc);
+			AddGlobalHotkey(&genhotkey, WASABI_API_LNGSTRINGW_DUP(IDS_GHK_STRING),
+							"NxSThingerToggle", &hotkey_ipc, 0, 0, HotkeyCallback);
+		}
+		else if (lParam == IPC_GET_EMBEDIF_NEW_HWND)
+		{
+			if (((HWND)wParam == hWndThinger) && visible &&
+				(InitialShowState() != SW_SHOWMINIMIZED))
+			{
+				// only show on startup if under a classic skin and was set
+				PostMessage(hWndThinger, WM_USER + 102, 0, 0);
+			}
 		}
 		else if (lParam == IPC_SKIN_CHANGED_NEW) {
 			// make sure we catch all appropriate skin changes
@@ -706,10 +715,8 @@ LRESULT CALLBACK ButtonSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 								UINT_PTR uIdSubclass, DWORD_PTR dwRefData) {
 	switch (uMsg) {
 	case WM_LBUTTONDOWN:
-		SendMessage(g_thingerwnd, WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(hWnd), WM_LBUTTONDOWN), (LPARAM)hWnd);
-		break;
 	case WM_LBUTTONUP:
-		SendMessage(g_thingerwnd, WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(hWnd), WM_LBUTTONUP), (LPARAM)hWnd);
+		SendMessage(g_thingerwnd, WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(hWnd), uMsg), (LPARAM)hWnd);
 		break;
 	}
 
@@ -970,22 +977,10 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 		}
 		return TRUE;
 	}
-	default: break;
-	}
-	return DefWindowProc(hWnd, uMsg, wParam, lParam);
-}
-
-LRESULT CALLBACK GenWndSubclass(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam,
-								UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
-{
-	const BOOL a = WADlg_handleDialogMsgs(hwnd, uMsg, wParam, lParam);
-	if (a)
-	{
-		return a;
-	}
-
-	switch (uMsg) {
-	case WM_CONTEXTMENU: {
+	// using this as it saves having to subclass the skinned window
+	// for it to be able to get to the shift+f10 context menu action
+	case WM_USER + 0x98:
+	/*case WM_CONTEXTMENU:*/ {
 		int x = GET_X_LPARAM(lParam), y = GET_Y_LPARAM(lParam);
 		if ((x == -1) || (y == -1)) // x and y are -1 if the user invoked a shift-f10 popup menu
 		{
@@ -1011,8 +1006,24 @@ LRESULT CALLBACK GenWndSubclass(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 		upscaling = lParam;
 		UpdateStatusFont();
 		InvalidateRect(g_thingerwnd, NULL, TRUE);
-		return 0;
+		break;
 	}
+	default: break;
+	}
+	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
+LRESULT CALLBACK GenWndSubclass(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam,
+								UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
+{
+	// needed for the status bar handling
+	const BOOL a = WADlg_handleDialogMsgs(hwnd, uMsg, wParam, lParam);
+	if (a)
+	{
+		return a;
+	}
+
+	switch (uMsg) {
 	case WM_WINDOWPOSCHANGING: {
 		if ((SWP_NOSIZE | SWP_NOMOVE) != ((SWP_NOSIZE | SWP_NOMOVE) &
 			((LPWINDOWPOS)lParam)->flags) ||
