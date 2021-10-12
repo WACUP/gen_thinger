@@ -38,7 +38,7 @@
 
 /* global data */
 #define PLUGIN_INISECTION TEXT("Thinger")
-#define PLUGIN_VERSION "1.0.3"
+#define PLUGIN_VERSION "1.0.4"
 
 // Menu ID's
 UINT WINAMP_NXS_THINGER_MENUID = 48882;
@@ -228,8 +228,8 @@ void ProcessMenuResult(UINT command, HWND parent) {
 void SetupConfigMenu(HMENU popup)
 {
 #ifdef _DEBUG
-	EnableMenuItem(popup, 11, MF_BYCOMMAND | (g_uLastIconID != -1) ? MF_ENABLED : MF_GRAYED);
-	CheckMenuItem(popup, 10, MF_BYCOMMAND | g_debugmode ? MF_CHECKED : MF_UNCHECKED);
+	EnableMenuItem(popup, 11, MF_BYCOMMAND | ((g_uLastIconID != -1) ? MF_ENABLED : MF_GRAYED));
+	CheckMenuItem(popup, 10, MF_BYCOMMAND | (g_debugmode ? MF_CHECKED : MF_UNCHECKED));
 #endif
 
 	HMENU sub_menu = GetSubMenu(popup, 0);
@@ -683,13 +683,12 @@ RECT GetIconRect(int index) {
 /* Fixed in v0.5: Accounts for hidden icons.
    Returns the index of the icon at point pt. */
 int GetIconFromPoint(POINT pt) {
-	RECT r = { 0 };
 	int c = IconList_GetSize(),
 		i = 0,
 		n = 0;
 	while (i < c) {
 		if ((IconList_Get(i)->dwFlags & NTIS_HIDDEN)!=NTIS_HIDDEN) {
-			r = GetIconRect(n);
+			RECT r = GetIconRect(n);
 			if (PtInRect(&r, pt))
 				return i;
 			++n;
@@ -815,7 +814,6 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 	case WM_MOUSEMOVE: {
 		int i;
 		POINT pt;
-		lpNxSThingerIconStruct lpntis;
 		RECT r;
 		TRACKMOUSEEVENT tme;
 
@@ -830,7 +828,7 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 		}
 
 		if (i >= 0 && i < IconList_GetSize()) {
-			lpntis = IconList_Get(i);
+			lpNxSThingerIconStruct lpntis = IconList_Get(i);
 			if (lpntis) {
 				SetDlgItemText(hWndThinger, IDC_STATUS, lpntis->lpszDesc);
 			}
@@ -1001,7 +999,6 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 		break;
 	}
 	case WM_USER + 0x99: {
-		const int old_dsize = dsize;
 		dsize = wParam;
 		upscaling = lParam;
 		UpdateStatusFont();
@@ -1013,22 +1010,8 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-LRESULT CALLBACK GenWndSubclass(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam,
-								UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
-{
-	// needed for the status bar handling
-	const BOOL a = WADlg_handleDialogMsgs(hwnd, uMsg, wParam, lParam);
-	if (a)
-	{
-		return a;
-	}
+void LayoutWindow(HWND hwnd) {
 
-	switch (uMsg) {
-	case WM_WINDOWPOSCHANGING: {
-		if ((SWP_NOSIZE | SWP_NOMOVE) != ((SWP_NOSIZE | SWP_NOMOVE) &
-			((LPWINDOWPOS)lParam)->flags) ||
-			(SWP_FRAMECHANGED & ((LPWINDOWPOS)lParam)->flags))
-		{
 			RECT r = { 0 };
 			GetWindowRect(hWndThinger, &r);
 
@@ -1053,6 +1036,28 @@ LRESULT CALLBACK GenWndSubclass(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 			SetWindowPos(GetDlgItem(hWndThinger, IDC_STATUS), NULL, left_origin,
 						 top + height, ((other_left - left) + (width * 2)),
 						 (config_showsb ? Scale(3) : 0), SWP_NOACTIVATE | SWP_NOZORDER);
+}
+
+LRESULT CALLBACK GenWndSubclass(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam,
+								UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
+{
+	// needed for the status bar handling
+	const BOOL a = WADlg_handleDialogMsgs(hwnd, uMsg, wParam, lParam);
+	if (a) {
+		return a;
+	}
+
+	switch (uMsg) {
+	case WM_USER + 102: {
+		LayoutWindow(hwnd);
+		break;
+	}
+	case WM_WINDOWPOSCHANGING: {
+		if ((SWP_NOSIZE | SWP_NOMOVE) != ((SWP_NOSIZE | SWP_NOMOVE) &
+			((LPWINDOWPOS)lParam)->flags) ||
+			(SWP_FRAMECHANGED & ((LPWINDOWPOS)lParam)->flags))
+		{
+			LayoutWindow(hwnd);
 		}
 		break;
 	}
