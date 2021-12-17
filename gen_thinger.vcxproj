@@ -19,7 +19,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <UseOfMfc>false</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -149,9 +149,6 @@ REM ..\sdk\lng_generator\lng_generator "$(TargetDir)\$(ProjectName).dll" /build 
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ctrlskin.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="embedwnd.cpp" />
     <ClCompile Include="iconlist.c" />
     <ClCompile Include="thinger.cpp" />

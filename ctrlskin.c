@@ -21,15 +21,15 @@ static LRESULT CALLBACK CheckBoxSubclass(HWND hwnd, UINT uMsg, WPARAM wParam, LP
 static LRESULT CALLBACK GroupBoxSubclass(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 static BOOL CALLBACK EnumWndProc(HWND hwnd, LPARAM lParam);
 static LRESULT CALLBACK EmbedWndSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-static INT_PTR WINAPI CtrlSkin_DialogBoxParam(IN HINSTANCE hInstance, IN LPCSTR lpTemplateName, IN HWND hWndParent, IN DLGPROC lpDialogFunc, IN LPARAM dwInitParam);
+static INT_PTR WINAPI CtrlSkin_DialogBoxParam(IN HINSTANCE hInstance, IN LPCTSTR lpTemplateName, IN HWND hWndParent, IN DLGPROC lpDialogFunc, IN LPARAM dwInitParam);
 
 
 static HWND ctrlskin_hwndWinamp=0;
 
 // The strings for our window properties
-#define CTRLSKIN_PROP_OLDWNDPROC   "CtrlSkin_oldWndProc"
-#define CTRLSKIN_PROP_DATAPTR      "CtrlSkin_DataPointer"
-#define CTRLSKIN_PROP_EMBEDDEDWND  "CtrlSkin_EmbeddedWindow"
+#define CTRLSKIN_PROP_OLDWNDPROC   TEXT("CtrlSkin_oldWndProc")
+#define CTRLSKIN_PROP_DATAPTR      TEXT("CtrlSkin_DataPointer")
+#define CTRLSKIN_PROP_EMBEDDEDWND  TEXT("CtrlSkin_EmbeddedWindow")
 
 typedef struct _CtrlSkin_data {
 	embedWindowState *ews;
@@ -83,7 +83,7 @@ BOOL CtrlSkin_SkinControls(HWND hDlg, BOOL fActive) {
 
 INT_PTR
 WINAPI
-CtrlSkin_DialogBoxParam(IN HINSTANCE hInstance, IN LPCSTR lpTemplateName,
+CtrlSkin_DialogBoxParam(IN HINSTANCE hInstance, IN LPCTSTR lpTemplateName,
 						IN HWND hWndParent, IN DLGPROC lpDialogFunc, IN LPARAM dwInitParam) {
 
 	HWND hDlg;
@@ -232,7 +232,7 @@ static BOOL CALLBACK EnumWndProc(HWND hwnd, LPARAM lParam) {
 		if ( !lstrcmpi(szClass, TRACKBAR_CLASS) ) {
 			SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG)
 				SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG)TrackBarSubclass));
-		} else if ( !lstrcmp(CharUpper(szClass), "BUTTON") ) {
+		} else if ( !lstrcmp(CharUpper(szClass), TEXT("BUTTON")) ) {
 			DWORD type = ((DWORD)GetWindowLong(hwnd, GWL_STYLE) & BS_TYPEMASK);
 
 			if ((type == BS_CHECKBOX) || (type == BS_RADIOBUTTON) ||
@@ -261,7 +261,7 @@ static BOOL CALLBACK EnumWndProc(HWND hwnd, LPARAM lParam) {
 		if ( !lstrcmpi(szClass, TRACKBAR_CLASS) ) {
 			if (GetWindowLongPtr(hwnd, GWLP_WNDPROC)==(LONG)TrackBarSubclass)
 				SetWindowLongPtr(hwnd, GWLP_WNDPROC, GetWindowLongPtr(hwnd, GWLP_USERDATA));
-		} else if ( !lstrcmp(CharUpper(szClass), "BUTTON") ) {
+		} else if ( !lstrcmp(CharUpper(szClass), TEXT("BUTTON")) ) {
 			DWORD type = ((DWORD)GetWindowLong(hwnd, GWL_STYLE) & BS_TYPEMASK);
 
 			if ((type == BS_CHECKBOX) || (type == BS_RADIOBUTTON) ||
@@ -343,8 +343,6 @@ static LRESULT CALLBACK TrackBarSubclass(HWND hwnd, UINT uMsg, WPARAM wParam, LP
 	HPEN hpen, holdpen;
 	HBITMAP hbm, holdbm;
 	HDC memdc;
-	int cyBox=58-31;
-	int cxBox=56-31;
 	RECT r;
 	POINT pt;
 
@@ -541,9 +539,9 @@ static LRESULT CALLBACK CheckBoxSubclass(HWND hwnd, UINT uMsg, WPARAM wParam, LP
 		}
 
 		// Draw checkbox label
-		ZeroMemory(&lf, sizeof(LOGFONT));
+		memset(&lf, 0, sizeof(LOGFONT));
 		lstrcpyn(lf.lfFaceName,
-			(char*)SendMessage(ctrlskin_hwndWinamp, WM_WA_IPC, 1, IPC_GET_GENSKINBITMAP), LF_FACESIZE);
+			(LPCWSTR)SendMessage(ctrlskin_hwndWinamp, WM_WA_IPC, 6, IPC_GET_GENSKINBITMAP), LF_FACESIZE);
 		lf.lfHeight = -SendMessage(ctrlskin_hwndWinamp, WM_WA_IPC, 3, IPC_GET_GENSKINBITMAP);
 		lf.lfCharSet = (unsigned char)SendMessage(ctrlskin_hwndWinamp, WM_WA_IPC, 2, IPC_GET_GENSKINBITMAP);
 		hf = CreateFontIndirect(&lf);
@@ -621,9 +619,9 @@ static LRESULT CALLBACK GroupBoxSubclass(HWND hwnd, UINT uMsg, WPARAM wParam, LP
 		FrameRect(hdc, &r, hbr);
 		
 		// Draw checkbox label
-		ZeroMemory(&lf, sizeof(LOGFONT));
+		memset(&lf, 0, sizeof(LOGFONT));
 		lstrcpyn(lf.lfFaceName,
-			(char*)SendMessage(ctrlskin_hwndWinamp, WM_WA_IPC, 1, IPC_GET_GENSKINBITMAP), LF_FACESIZE);
+			(LPCWSTR)SendMessage(ctrlskin_hwndWinamp, WM_WA_IPC, 6, IPC_GET_GENSKINBITMAP), LF_FACESIZE);
 		lf.lfHeight = -SendMessage(ctrlskin_hwndWinamp, WM_WA_IPC, 3, IPC_GET_GENSKINBITMAP);
 		lf.lfCharSet = (unsigned char)SendMessage(ctrlskin_hwndWinamp, WM_WA_IPC, 2, IPC_GET_GENSKINBITMAP);
 		hf = CreateFontIndirect(&lf);

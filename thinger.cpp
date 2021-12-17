@@ -327,6 +327,7 @@ int Scale(const int mode)
 	#define WND_CYSB 14
 	return (!mode ? (config_showsb ? WND_CXICON : WND_CXICON_FH) :
 		   (mode == 1 ? (config_showsb ? WND_CYICON : WND_CYICON_FH) :
+		   // cppcheck-suppress duplicateValueTernary
 		   (mode == 2 ? WND_CXBTN : WND_CYSB))) * (dsize + 1);
 	#undef WND_CXICON
 	#undef WND_CYICON

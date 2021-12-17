@@ -16,7 +16,7 @@
 extern "C" {
 #endif
 
-#include "wa_dlg.h"
+#include <winamp/wa_dlg.h>
 
 
 /* You must call this at least once, to set the handle to Winamp's main window.

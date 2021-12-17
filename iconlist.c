@@ -55,9 +55,13 @@ int IconList_Add(lpNxSThingerIconStruct i)
 	}
 
 	lpNxSThingerIconStruct copy = (lpNxSThingerIconStruct)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(NxSThingerIconStruct));
+	if (copy)
+	{
 	memcpy(copy, i, sizeof(NxSThingerIconStruct));
 	g_list.listptr[g_list.listsize++]=copy;
 	return (copy->uIconId = uIconId++); // assign iconid
+	}
+	return 0;
 }
 
 lpNxSThingerIconStruct IconList_Get(int w)

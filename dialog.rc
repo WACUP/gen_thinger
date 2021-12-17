@@ -178,7 +178,7 @@ BEGIN
             VALUE "FileDescription", "Winamp General Purpose Plug-in"
             VALUE "FileVersion", "1.0.4.0"
             VALUE "InternalName", "gen_thinger.dll"
-            VALUE "LegalCopyright", "Copyright © 2004-5 Saivert, Addtional updates by Darren Owen aka DrO (2021)"
+            VALUE "LegalCopyright", "Copyright © 2004-5 Saivert, Addtional updates by Darren Owen aka DrO (2021-2022)"
             VALUE "OriginalFilename", "gen_thinger.dll"
             VALUE "ProductName", "Thinger"
             VALUE "ProductVersion", "1.0.4.0"
