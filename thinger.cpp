@@ -38,7 +38,7 @@
 
 /* global data */
 #define PLUGIN_INISECTION TEXT("Thinger")
-#define PLUGIN_VERSION "1.0.4"
+#define PLUGIN_VERSION "1.1.2"
 
 // Menu ID's
 UINT WINAMP_NXS_THINGER_MENUID = 48882;
@@ -77,7 +77,7 @@ static LPARAM ipc_thingerinit = -1;
 static HFONT g_hStatusFont = NULL;
 
 /* Thinger API stuff */
-static LONG g_thingeripc = -1;
+static LONG_PTR g_thingeripc = -1;
 
 /* New in v0.517: Default bitmaps for invalid bitmap/icon handles */
 static HBITMAP g_hbmDef = NULL;
@@ -92,7 +92,7 @@ static HWND hWndThinger = NULL;
 /* Thinger window */
 static embedWindowState embed = { 0 };
 static genHotkeysAddStruct genhotkey = { 0 };
-static UINT hotkey_ipc = (UINT)-1;
+static UINT_PTR hotkey_ipc = (UINT_PTR)-1;
 
 LRESULT CALLBACK ThingerWndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK GenWndSubclass(HWND, UINT, WPARAM, LPARAM, UINT_PTR, DWORD_PTR);
@@ -263,7 +263,7 @@ void config(void) {
 
 	AddItemToMenu2(popup, 0, (LPWSTR)plugin.description, 0, 1);
 	EnableMenuItem(popup, 0, MF_BYCOMMAND | MF_GRAYED | MF_DISABLED);
-	AddItemToMenu2(popup, 0, 0, 1, 1);
+	AddItemToMenu2(popup, (UINT)-1, 0, 1, 1);
 
 	HWND list = FindWindowEx(GetParent(GetFocus()), 0, L"SysListView32", 0);
 	ListView_GetItemRect(list, ListView_GetSelectionMark(list), &r, LVIR_BOUNDS);
@@ -1000,8 +1000,8 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 		break;
 	}
 	case WM_USER + 0x99: {
-		dsize = wParam;
-		upscaling = lParam;
+		dsize = (int)wParam;
+		upscaling = (int)lParam;
 		UpdateStatusFont();
 		InvalidateRect(g_thingerwnd, NULL, TRUE);
 		break;
@@ -1043,7 +1043,7 @@ LRESULT CALLBACK GenWndSubclass(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 								UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
 {
 	// needed for the status bar handling
-	const BOOL a = WADlg_handleDialogMsgs(hwnd, uMsg, wParam, lParam);
+	const LRESULT a = WADlg_handleDialogMsgs(hwnd, uMsg, wParam, lParam);
 	if (a) {
 		return a;
 	}
@@ -1087,7 +1087,7 @@ void OpenSyntaxHelpAndReadMe(HWND hwndParent) {
 	} else {
 		FindClose(hFind);
 		//ExecuteURL(syntaxfile);
-		ShellExecute(hwndParent, TEXT("open"), syntaxfile, NULL, NULL, SW_SHOWNORMAL);
+		OpenAction(hwndParent, syntaxfile, NULL);
 	}
 }*/
 

@@ -13,9 +13,6 @@
       <UniqueIdentifier>{30eae3c4-4c73-4913-a8ae-479f21a47dd1}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
-    <Filter Include="External Libraries">
-      <UniqueIdentifier>{0da58b5e-4833-46ea-a5e6-47da155ffdea}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="iconlist.c">
@@ -103,5 +100,10 @@
     <ResourceCompile Include="dialog.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="gen_thinger.def">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -185,6 +185,9 @@ REM ..\sdk\lng_generator\lng_generator "$(TargetDir)\$(ProjectName).dll" /build 
   <ItemGroup>
     <Text Include="readme.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="gen_thinger.def" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
