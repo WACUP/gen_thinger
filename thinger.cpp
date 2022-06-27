@@ -271,8 +271,8 @@ void config(void) {
 
 	SetupConfigMenu(popup);
 
-	ProcessMenuResult(TrackPopupMenu(popup, TPM_RETURNCMD | TPM_LEFTBUTTON,
-									 r.left, r.top, 0, list, NULL), list);
+	ProcessMenuResult(TrackPopupMenu(popup, TPM_RETURNCMD, r.left,
+									 r.top, 0, list, NULL), list);
 	DestroyMenu(popup);
 }
 
@@ -327,7 +327,6 @@ int Scale(const int mode)
 	#define WND_CYSB 14
 	return (!mode ? (config_showsb ? WND_CXICON : WND_CXICON_FH) :
 		   (mode == 1 ? (config_showsb ? WND_CYICON : WND_CYICON_FH) :
-		   // cppcheck-suppress duplicateValueTernary
 		   (mode == 2 ? WND_CXBTN : WND_CYSB))) * (dsize + 1);
 	#undef WND_CXICON
 	#undef WND_CYICON
@@ -374,7 +373,7 @@ void UpdateStatusFont(void) {
 	RECT rc = { 0 };
 	GetClientRect(hWndThinger, &rc);
 	GetIdealFontForArea(hWndThinger, g_hStatusFont, (rc.right - rc.left), Scale(3));
-	SendMessage(GetDlgItem(hWndThinger, IDC_STATUS), WM_SETFONT,
+	SendDlgItemMessage(hWndThinger, IDC_STATUS, WM_SETFONT,
 				(WPARAM)g_hStatusFont, MAKELPARAM(1, 0));
 }
 
@@ -439,10 +438,7 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 				RECT r = { 0 };
 				GetWindowRect(hWndThinger, &r);
 
-				MLSKINWINDOW sw = { 0 };
-				sw.style = /*SWS_USESKINFONT |*/ SWS_COMMON_NO_FONT;
-				sw.skinType = SKINNEDWND_TYPE_BUTTON;
-
+				MLSKINWINDOW sw = { 0, SKINNEDWND_TYPE_BUTTON, SWS_COMMON_NO_FONT };
 				HWND button = CreateWindow(WC_BUTTON, L"<", WS_CHILD | WS_TABSTOP |
 										   WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWndThinger,
 										   (HMENU)IDC_LEFTSCROLLBTN, plugin.hDllInstance, 0);
@@ -995,8 +991,8 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 		SetupConfigMenu(g_hPopupMenu);
 
-		ProcessMenuResult(TrackPopup(g_hPopupMenu, TPM_RETURNCMD|TPM_NONOTIFY|
-						  TPM_LEFTBUTTON, x, y, g_thingerwnd), g_thingerwnd);
+		ProcessMenuResult(TrackPopup(g_hPopupMenu, TPM_RETURNCMD | TPM_NONOTIFY, x,
+												   y, g_thingerwnd), g_thingerwnd);
 		break;
 	}
 	case WM_USER + 0x99: {
@@ -1042,7 +1038,8 @@ void LayoutWindow(HWND hwnd) {
 LRESULT CALLBACK GenWndSubclass(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam,
 								UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
 {
-	// needed for the status bar handling
+	// this is needed for the button & status bar drawing
+	// TODO drop this so it's just using skinwindow code
 	const LRESULT a = WADlg_handleDialogMsgs(hwnd, uMsg, wParam, lParam);
 	if (a) {
 		return a;
