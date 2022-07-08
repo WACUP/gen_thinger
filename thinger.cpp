@@ -304,7 +304,7 @@ int init(void) {
 
 	wchar_t pluginTitleW[256] = { 0 };
 	StringCchPrintf(pluginTitleW, ARRAYSIZE(pluginTitleW), WASABI_API_LNGSTRINGW(IDS_PLUGIN_NAME), TEXT(PLUGIN_VERSION));
-	plugin.description = (char*)_wcsdup(pluginTitleW);
+	plugin.description = (char*)plugin.memmgr->sysDupStr(pluginTitleW);
 
 	// wParam must have something provided else it returns 0
 	// and then acts like a IPC_GETVERSION call... not good!
