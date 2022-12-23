@@ -38,7 +38,7 @@
 
 /* global data */
 #define PLUGIN_INISECTION TEXT("Thinger")
-#define PLUGIN_VERSION "1.1.2"
+#define PLUGIN_VERSION "1.1.3"
 
 // Menu ID's
 UINT WINAMP_NXS_THINGER_MENUID = 48882;
@@ -103,10 +103,7 @@ RECT GetIconRect(int index);
 int GetIconFromPoint(POINT pt);
 int GetNumVisibleIcons();
 
-api_language *WASABI_API_LNG = NULL;
-// these two must be declared as they're used by the language api's
-// when the system is comparing/loading the different resources
-HINSTANCE WASABI_API_LNG_HINST = NULL, WASABI_API_ORIG_HINST = NULL;
+SETUP_API_LNG_VARS;
 
 // this is used to identify the skinned frame to allow
 // for embedding/control by modern skins if needed
@@ -259,20 +256,17 @@ void SetupConfigMenu(HMENU popup)
 void config(void) {
 	//HMENU hMenu = WASABI_API_LOADMENUW(IDR_CONTEXTMENU);
 	HMENU popup = GetSubMenu(LoadMenu(plugin.hDllInstance, TEXT("MENU1")), 0);
-	RECT r = { 0 };
 
 	AddItemToMenu2(popup, 0, (LPWSTR)plugin.description, 0, 1);
 	EnableMenuItem(popup, 0, MF_BYCOMMAND | MF_GRAYED | MF_DISABLED);
 	AddItemToMenu2(popup, (UINT)-1, 0, 1, 1);
 
-	HWND list = FindWindowEx(GetParent(GetFocus()), 0, L"SysListView32", 0);
-	ListView_GetItemRect(list, ListView_GetSelectionMark(list), &r, LVIR_BOUNDS);
-	ClientToScreen(list, (LPPOINT)&r);
-
 	SetupConfigMenu(popup);
 
-	ProcessMenuResult(TrackPopupMenu(popup, TPM_RETURNCMD, r.left,
-									 r.top, 0, list, NULL), list);
+	POINT pt = { 0 };
+	HWND list = GetPrefsListPos(&pt);
+	ProcessMenuResult(TrackPopupMenu(popup, TPM_RETURNCMD, pt.x,
+									 pt.y, 0, list, NULL), list);
 	DestroyMenu(popup);
 }
 
@@ -366,9 +360,11 @@ void UpdateStatusFont(void) {
 		DeleteObject(g_hStatusFont);
 	}
 
-	g_hStatusFont = CreateFont(-8, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET,
-							   OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-							   DEFAULT_PITCH | FF_DONTCARE, (LPCWSTR)GetGenSkinBitmap(6));
+	g_hStatusFont = CreateFont(-8, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+							   DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
+							   CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+							   DEFAULT_PITCH | FF_DONTCARE, (LPCWSTR)
+							   GetGenSkinBitmap(6, NULL));
 
 	RECT rc = { 0 };
 	GetClientRect(hWndThinger, &rc);
@@ -485,7 +481,7 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 			// is meant to remain hidden until Winamp is restored back into view correctly
 			if (InitialShowState() == SW_SHOWMINIMIZED)
 			{
-				SetEmbeddedWindowMinimizedMode(hWndThinger, TRUE);
+				SetEmbeddedWindowMinimisedMode(hWndThinger, true);
 			}
 			/*else
 			{
@@ -712,8 +708,24 @@ LRESULT CALLBACK ButtonSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 	switch (uMsg) {
 	case WM_LBUTTONDOWN:
 	case WM_LBUTTONUP:
+		{
 		SendMessage(g_thingerwnd, WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(hWnd), uMsg), (LPARAM)hWnd);
 		break;
+	}
+		case WM_SYSKEYDOWN:
+		case WM_SYSKEYUP:
+		case WM_SYSCHAR:
+		case WM_KEYDOWN:
+		case WM_KEYUP:
+		case WM_CHAR:
+		{
+			// this is needed to avoid it causing a beep
+			// due to it not being reported as unhandled
+			EatKeyPress();
+
+			PostMessage(plugin.hwndParent, uMsg, wParam, lParam);
+			break;
+		}
 	}
 
 	return DefSubclass(hWnd, uMsg, wParam, lParam);
@@ -852,9 +864,23 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 		SetDlgItemText(hWndThinger, IDC_STATUS, TEXT(""));
 		break;
 	}
+	case WM_GETDLGCODE:
+	{
+		SetWindowLongPtr(hWnd, DWLP_MSGRESULT, TRUE);
+		return DLGC_WANTALLKEYS;
+	}
+	case WM_SYSKEYDOWN:
+	case WM_SYSKEYUP:
+	case WM_SYSCHAR:
 	case WM_KEYDOWN:
 	case WM_KEYUP:
 	case WM_CHAR:
+	{
+		// this is needed to avoid it causing a beep
+		// due to it not being reported as unhandled
+		EatKeyPress();
+	}
+	[[fallthrough]];
 	case WM_MOUSEWHEEL: {
 		PostMessage(plugin.hwndParent, uMsg, wParam, lParam);
 		break;
