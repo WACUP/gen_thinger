@@ -38,7 +38,7 @@
 
 /* global data */
 #define PLUGIN_INISECTION TEXT("Thinger")
-#define PLUGIN_VERSION "1.1.3"
+#define PLUGIN_VERSION "1.1.5"
 
 // Menu ID's
 UINT WINAMP_NXS_THINGER_MENUID = 48882;
@@ -280,14 +280,6 @@ void quit(void) {
 	{
 		/* Update position and size */
 		DestroyEmbeddedWindow(&embed);
-	}
-
-	if (IsWindow(g_thingerwnd)) {
-		DestroyWindow(g_thingerwnd); /* delete our window */
-	}
-
-	if (IsWindow(embed.me)) {
-		DestroyWindow(embed.me);
 	}
 }
 
@@ -546,9 +538,7 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 			}
 		}
 		else if (lParam == IPC_SKIN_CHANGED_NEW) {
-			// make sure we catch all appropriate skin changes
-			UpdateStatusFont();
-			InvalidateRect(g_thingerwnd, NULL, TRUE);
+			PostMessage(hWndThinger, WM_USER + 0x202, 0, 0);
 		}
 	}
 	
@@ -1001,7 +991,7 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 	// using this as it saves having to subclass the skinned window
 	// for it to be able to get to the shift+f10 context menu action
 	case WM_USER + 0x98:
-	/*case WM_CONTEXTMENU:*/ {
+	case WM_CONTEXTMENU: {
 		int x = GET_X_LPARAM(lParam), y = GET_Y_LPARAM(lParam);
 		if ((x == -1) || (y == -1)) // x and y are -1 if the user invoked a shift-f10 popup menu
 		{
@@ -1019,13 +1009,6 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 		ProcessMenuResult(TrackPopup(g_hPopupMenu, TPM_RETURNCMD | TPM_NONOTIFY, x,
 												   y, g_thingerwnd), g_thingerwnd);
-		break;
-	}
-	case WM_USER + 0x99: {
-		dsize = (int)wParam;
-		upscaling = (int)lParam;
-		UpdateStatusFont();
-		InvalidateRect(g_thingerwnd, NULL, TRUE);
 		break;
 	}
 	default: break;
@@ -1072,6 +1055,20 @@ LRESULT CALLBACK GenWndSubclass(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 	}
 
 	switch (uMsg) {
+	case WM_USER + 0x99: {
+		dsize = (int)wParam;
+		upscaling = (int)lParam;
+
+		[[fallthrough]];
+	}
+	case WM_USER + 0x202: {	// WM_DISPLAYCHANGE / IPC_SKIN_CHANGED_NEW
+		// make sure we catch all appropriate skin changes
+		UpdateStatusFont();
+
+		RedrawWindow(hwnd, NULL, NULL, RDW_UPDATENOW |
+					 RDW_INVALIDATE | RDW_ALLCHILDREN);
+		break;
+	}
 	case WM_USER + 102: {
 		LayoutWindow(hwnd);
 		break;
