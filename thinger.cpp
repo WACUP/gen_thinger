@@ -38,7 +38,7 @@
 
 /* global data */
 #define PLUGIN_INISECTION TEXT("Thinger")
-#define PLUGIN_VERSION "1.1.5"
+#define PLUGIN_VERSION "1.1.7"
 
 // Menu ID's
 UINT WINAMP_NXS_THINGER_MENUID = 48882;
@@ -102,6 +102,7 @@ LRESULT CALLBACK ButtonSubclass(HWND, UINT, WPARAM, LPARAM, UINT_PTR, DWORD_PTR)
 RECT GetIconRect(int index);
 int GetIconFromPoint(POINT pt);
 int GetNumVisibleIcons();
+void LayoutWindow(HWND hwnd);
 
 SETUP_API_LNG_VARS;
 
@@ -200,12 +201,9 @@ void ProcessMenuResult(UINT command, HWND parent) {
 			SaveNativeIniInt(PLUGIN_INI, PLUGIN_INISECTION, L"config_showsb", config_showsb);
 
 			/* help force update the view without manually resizing like the plug-in required */
-			RECT r = { 0 };
-			GetWindowRect(hWndThinger, &r);
-			SetWindowPos(hWndThinger, NULL, 0, 0, (r.right - r.left),
-						 (r.bottom - r.top), SWP_NOACTIVATE |
-						 SWP_NOMOVE | SWP_NOZORDER);
-			InvalidateRect(g_thingerwnd, NULL, TRUE);
+			const HWND _parent = GetParent(parent);
+			LayoutWindow(_parent);
+			InvalidateRect(_parent, NULL, TRUE);
 			break;
 		}
 		case ID__DIMICONSWHENSCROLLING: {
@@ -1018,30 +1016,34 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 void LayoutWindow(HWND hwnd) {
 
+	const HWND parent = GetParent(hwnd);
+	const bool classic_skin = !IsWindow(parent);
 			RECT r = { 0 };
-			GetWindowRect(hWndThinger, &r);
+	GetClientRect(hwnd, &r);
 
-			const int width = Scale(2),
-					  height = (r.bottom - r.top) - (34 * (dsize + 1)) -
-							   (config_showsb ? Scale(3) : 0),
-					  top = (20 * (dsize + 1)),
-					  left_origin = (11 * (dsize + 1));
+	const int scaling = (classic_skin ? (dsize + 1) : 1),
+			  width = (classic_skin ? Scale(2) : 21),
+			  sb_width = (config_showsb ? Scale(3) : 0),
+			  height = ((r.bottom - r.top) - (34 * scaling) - sb_width),
+			  top = (20 * scaling),
+			  left_origin = (11 * scaling);
 
-			SetWindowPos(GetDlgItem(hWndThinger, IDC_LEFTSCROLLBTN),
-						 NULL, left_origin, top, width, height,
-						 SWP_NOACTIVATE | SWP_NOZORDER);
+	SetWindowPos(GetDlgItem(hWndThinger, IDC_LEFTSCROLLBTN), NULL, left_origin,
+							top, width, height, SWP_NOACTIVATE | SWP_NOZORDER);
 
 			const int left = (left_origin + width),
-					  other_left = (r.right - r.left) - (22 * (dsize + 1));
-			SetWindowPos(g_thingerwnd, NULL, left, top, (other_left - left),
+			  other_left = ((r.right - r.left) - (19 * scaling)),
+			  edge = (other_left - (width * 2));
+
+	SetWindowPos(g_thingerwnd, NULL, left, top, edge,
 						 height, SWP_NOACTIVATE | SWP_NOZORDER);
 
-			SetWindowPos(GetDlgItem(hWndThinger, IDC_RIGHTSCROLLBTN), NULL, other_left,
-						 top, width, height, SWP_NOACTIVATE | SWP_NOZORDER);
+	SetWindowPos(GetDlgItem(hWndThinger, IDC_RIGHTSCROLLBTN), NULL, (left +
+				 edge), top, width, height, SWP_NOACTIVATE | SWP_NOZORDER);
 
-			SetWindowPos(GetDlgItem(hWndThinger, IDC_STATUS), NULL, left_origin,
-						 top + height, ((other_left - left) + (width * 2)),
-						 (config_showsb ? Scale(3) : 0), SWP_NOACTIVATE | SWP_NOZORDER);
+	SetWindowPos(GetDlgItem(hWndThinger, IDC_STATUS), NULL,
+				 left_origin, (top + height), other_left,
+				 sb_width, SWP_NOACTIVATE | SWP_NOZORDER);
 }
 
 LRESULT CALLBACK GenWndSubclass(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam,
