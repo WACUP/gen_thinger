@@ -478,7 +478,7 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 				// only show on startup if under a classic skin and was set
 				if (visible)
 				{
-					PostMessage(hWndThinger, WM_USER + 102, 0, 0);
+					ShowHideEmbeddedWindow(hWndThinger, TRUE, FALSE);
 				}
 			}*/
 
@@ -532,11 +532,11 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 				(InitialShowState() != SW_SHOWMINIMIZED))
 			{
 				// only show on startup if under a classic skin and was set
-				PostMessage(hWndThinger, WM_USER + 102, 0, 0);
+				ShowHideEmbeddedWindow(hWndThinger, TRUE, FALSE);
 			}
 		}
 		else if (lParam == IPC_SKIN_CHANGED_NEW) {
-			PostMessage(hWndThinger, WM_USER + 0x202, 0, 0);
+			RefreshInnerWindow(hWndThinger);
 		}
 	}
 	
@@ -788,6 +788,7 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 			}
 			break;
 		}
+		break;
 	}
 	case WM_LBUTTONUP:
 	case WM_RBUTTONUP: {
