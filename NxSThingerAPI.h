@@ -66,6 +66,8 @@ typedef struct _NxSThingerIconStruct {
   UINT uMsg;
   WPARAM wParam;
   LPARAM lParam;
+  int original_icon_id;
+  int original_icon_h_id;
 } NxSThingerIconStruct, * lpNxSThingerIconStruct;
 
 #ifdef __cplusplus

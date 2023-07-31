@@ -38,7 +38,7 @@
 
 /* global data */
 #define PLUGIN_INISECTION TEXT("Thinger")
-#define PLUGIN_VERSION "1.1.7"
+#define PLUGIN_VERSION "1.2"
 
 // Menu ID's
 UINT WINAMP_NXS_THINGER_MENUID = 48882;
@@ -80,11 +80,11 @@ static HFONT g_hStatusFont = NULL;
 static LONG_PTR g_thingeripc = -1;
 
 /* New in v0.517: Default bitmaps for invalid bitmap/icon handles */
-static HBITMAP g_hbmDef = NULL;
+/*static HBITMAP g_hbmDef = NULL;
 static HBITMAP g_hbmDefHighlight = NULL;
 
 static HICON g_hiDef = NULL;
-static HICON g_hiDefHighlight = NULL;
+static HICON g_hiDefHighlight = NULL;*/
 
 static int upscaling = 1, dsize = 0, no_uninstall = 1;
 static HWND hWndThinger = NULL;
@@ -298,9 +298,6 @@ int init(void) {
 	return GEN_INIT_SUCCESS;
 }
 
-WA_UTILS_API HBITMAP ResizeBitmap(HBITMAP hbmp, const INT cx,
-								  const INT cy, const BOOL mode);
-
 int Scale(const int mode)
 {
 	#define WND_CXICON 36
@@ -318,16 +315,31 @@ int Scale(const int mode)
 	#undef WND_CYSB
 }
 
+WA_UTILS_API HBITMAP BitmapBlendColor(HBITMAP hbmp, const COLORREF rgbBk);
+
 HBITMAP LoadPngFromBMP(const UINT ctrl_img)
 {
+	// TODO need to ensure this is re-built on skin changes
 	int cur_w = 0, cur_h = 0;
 	ARGB32 *data = LoadImageFromResource(plugin.language, WASABI_API_LNG_HINST,
 										 WASABI_API_ORIG_HINST, ctrl_img,
 										 L"PNG", &cur_w, &cur_h);
-	// TODO consider doing something to improve upscaling
-	HBITMAP ret = ResizeBitmap(GetHBitmap(data, cur_w, cur_h, 0, 0, -1), Scale(0), Scale(1), 0);
-	plugin.memmgr->sysFree(data);
-	return ret;
+
+	const int output_width = Scale(0), output_height = Scale(1);
+	const ARGB32* old_bits = (ARGB32*)data;
+	ARGB32* new_bits = ResizeRawImage((ARGB32*)data, cur_w, cur_h,
+									  output_width, output_height);
+	if (new_bits)
+	{
+		plugin.memmgr->sysFree((void*)old_bits);
+		data = new_bits;
+		cur_w = output_width;
+		cur_h = output_height;
+	}
+
+	// this will free the original bits for us!
+	return BitmapBlendColor(RawToHBitmap(data, cur_w, cur_h),
+							WADlg_getColor(WADLG_ITEMBG));
 }
 
 void AddIcon(NxSThingerIconStruct &ntis, const int flag, LPCWSTR text,
@@ -342,6 +354,8 @@ void AddIcon(NxSThingerIconStruct &ntis, const int flag, LPCWSTR text,
 	ntis.wParam = MAKEWPARAM(param, 0);
 	ntis.hBitmap = LoadPngFromBMP(icon_id);
 	ntis.hBitmapHighlight = LoadPngFromBMP(icon_h_id);
+	ntis.original_icon_id = icon_id;
+	ntis.original_icon_h_id = icon_h_id;
 	IconList_Add(&ntis);
 }
 
@@ -400,8 +414,8 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 
 			// finally we add menu items to the main right-click menu and the views menu
 			// with Modern skins which support showing the views menu for accessing windows
-			AddEmbeddedWindowToMenus(TRUE, WINAMP_NXS_THINGER_MENUID,
-									 WASABI_API_LNGSTRINGW(IDS_NXS_THINGER), -1);
+			AddEmbeddedWindowToMenus(WINAMP_NXS_THINGER_MENUID,
+									 WASABI_API_LNGSTRINGW(IDS_NXS_THINGER), visible, -1);
 
 			// now we will attempt to create an embedded window which adds its own main menu entry
 			// and related keyboard accelerator (like how the media library window is integrated)
@@ -471,7 +485,7 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 			// is meant to remain hidden until Winamp is restored back into view correctly
 			if (InitialShowState() == SW_SHOWMINIMIZED)
 			{
-				SetEmbeddedWindowMinimisedMode(hWndThinger, true);
+				SetEmbeddedWindowMinimisedMode(hWndThinger, MINIMISED_FLAG, TRUE);
 			}
 			/*else
 			{
@@ -492,11 +506,11 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 			Subclass(plugin.hwndParent, WinampSubclass);
 
 			/* Load the default bitmaps and icons */
-			g_hbmDef = LoadBitmap(plugin.hDllInstance, MAKEINTRESOURCE(IDB_NEW));
+			/*g_hbmDef = LoadBitmap(plugin.hDllInstance, MAKEINTRESOURCE(IDB_NEW));
 			g_hbmDefHighlight = LoadBitmap(plugin.hDllInstance, MAKEINTRESOURCE(IDB_NEW_H));
 
 			g_hiDef = LoadIcon(plugin.hDllInstance, MAKEINTRESOURCE(IDI_NEW));
-			g_hiDefHighlight = LoadIcon(plugin.hDllInstance, MAKEINTRESOURCE(IDI_NEW_H));
+			g_hiDefHighlight = LoadIcon(plugin.hDllInstance, MAKEINTRESOURCE(IDI_NEW_H));*/
 
 			/* Add the built-in icons to the icon list */
 			/* Set common values */
@@ -571,7 +585,7 @@ LRESULT CALLBACK WinampSubclass(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 			if (lpntis->hWnd == NULL) lpntis->hWnd = plugin.hwndParent;
 			if (lpntis->hIcon && IsWindow(lpntis->hWnd)) {
 				/* Substitute invalid icon/bitmap with a default one */
-				if ((lpntis->dwFlags & NTIS_BITMAP) == NTIS_BITMAP) {
+				/*if ((lpntis->dwFlags & NTIS_BITMAP) == NTIS_BITMAP) {
 					if (!GetObjectType(lpntis->hBitmap))
 						lpntis->hBitmap=g_hbmDef;
 
@@ -583,7 +597,7 @@ LRESULT CALLBACK WinampSubclass(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 					if (!GetObjectType(lpntis->hIconHighlight))
 						lpntis->hIconHighlight=g_hiDefHighlight;
-				}
+				}*/
 
 				/* Now add the damn icon */
 				i = IconList_Add(lpntis);
@@ -884,9 +898,9 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 	}
 	case WM_PAINT: {
 		PAINTSTRUCT ps = { 0 };
-		HBRUSH hbr;
 		RECT r;
 		int i;
+		int c;
 		int x;
 		HBITMAP hbm, holdbm;
 		HDC hdc, hdcwnd;
@@ -902,12 +916,12 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 
 		/* Paint the background */
-		hbr = CreateSolidBrush(WADlg_getColor(WADLG_ITEMBG));
-		FillRect(hdc, &r, hbr);
+		FillRectWithColour(hdc, &r, WADlg_getColor(WADLG_ITEMBG));
 
 		x = Scale(2) + g_scrolloffset;
 		/* Paint the icons */
-		for (i=0; i<IconList_GetSize(); i++) {
+		c = IconList_GetSize();
+		for (i=0; i<c; i++) {
 			lpNxSThingerIconStruct lpntis = IconList_Get(i);
 			if (lpntis && ((lpntis->dwFlags & NTIS_HIDDEN) != NTIS_HIDDEN)) {
 				// Determine draw method
@@ -929,7 +943,7 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 					// Call the TransparentBlt GDI function
 					GdiTransparentBlt(hdc, x, 0, Scale(0), Scale(1), icon_hdc, 0,
-										0, bm.bmWidth, bm.bmHeight, 0x00FF00FF);
+										0, bm.bmWidth, bm.bmHeight, /*0/*/0x00FF00FF/**/);
 
 					// Clean up
 					SelectObject(icon_hdc, icon_oldhbm);
@@ -942,15 +956,13 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 #endif
 				} else {
 
-					DrawIconEx(hdc, x, 0, (iHighlightItem==i) ? lpntis->hIconHighlight :
-								lpntis->hIcon, Scale(0), Scale(1), 0, hbr, 0);
+					DrawIconEx(hdc, x, 0, (iHighlightItem==i) ? lpntis->hIconHighlight : lpntis->hIcon,
+											   Scale(0), Scale(1), 0, WADlg_getBrush(WADLG_ITEMBG), 0);
 
 				}
 				x += Scale(0);
 			}
 		}
-
-		DeleteObject(hbr);
 
 		hdcwnd = BeginPaint(hWnd, &ps);
 
@@ -1067,6 +1079,19 @@ LRESULT CALLBACK GenWndSubclass(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 	case WM_USER + 0x202: {	// WM_DISPLAYCHANGE / IPC_SKIN_CHANGED_NEW
 		// make sure we catch all appropriate skin changes
 		UpdateStatusFont();
+
+		//LoadPngFromBMP
+		const int c = IconList_GetSize();
+		for (int i = 0; i < c; i++) {
+			lpNxSThingerIconStruct lpntis = IconList_Get(i);
+			if (lpntis) {
+				DeleteObject(lpntis->hBitmap);
+				lpntis->hBitmap = LoadPngFromBMP(lpntis->original_icon_id);
+
+				DeleteObject(lpntis->hBitmapHighlight);
+				lpntis->hBitmapHighlight = LoadPngFromBMP(lpntis->original_icon_h_id);
+			}
+		}
 
 		RedrawWindow(hwnd, NULL, NULL, RDW_UPDATENOW |
 					 RDW_INVALIDATE | RDW_ALLCHILDREN);
