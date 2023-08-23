@@ -28,7 +28,6 @@
 #include <loader/loader/paths.h>
 #include <loader/loader/utils.h>
 #include <loader/loader/ini.h>
-#include <loader/hook/BitmapEx.h>
 
 #include "iconlist.h"
 #include "embedwnd.h"
@@ -38,7 +37,7 @@
 
 /* global data */
 #define PLUGIN_INISECTION TEXT("Thinger")
-#define PLUGIN_VERSION "1.2"
+#define PLUGIN_VERSION "1.2.1"
 
 // Menu ID's
 UINT WINAMP_NXS_THINGER_MENUID = 48882;
@@ -338,7 +337,7 @@ HBITMAP LoadPngFromBMP(const UINT ctrl_img)
 	}
 
 	// this will free the original bits for us!
-	return BitmapBlendColor(RawToHBitmap(data, cur_w, cur_h),
+	return BitmapBlendColor(RawToHBitmap(data, cur_w, cur_h, false),
 							WADlg_getColor(WADLG_ITEMBG));
 }
 
