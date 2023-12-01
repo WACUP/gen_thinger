@@ -186,8 +186,8 @@ IDI_NEW                 ICON                    "new_h1.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,2,1,0
- PRODUCTVERSION 1,2,1,0
+ FILEVERSION 1,2,2,0
+ PRODUCTVERSION 1,2,2,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -204,12 +204,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "WACUP"
             VALUE "FileDescription", "General Purpose Plug-in"
-            VALUE "FileVersion", "1.2.1.0"
+            VALUE "FileVersion", "1.2.2.0"
             VALUE "InternalName", "gen_thinger.dll"
             VALUE "LegalCopyright", "Copyright © 2004-5 Saivert, Addtional updates by Darren Owen aka DrO (2021-2023)"
             VALUE "OriginalFilename", "gen_thinger.dll"
             VALUE "ProductName", "Thinger"
-            VALUE "ProductVersion", "1.2.1.0"
+            VALUE "ProductVersion", "1.2.2.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -227,8 +227,6 @@ END
 STRINGTABLE
 BEGIN
     IDS_PLUGIN_NAME         "Thinger v%s"
-    IDS_DO_YOU_ALSO_WANT_TO_REMOVE_SETTINGS 
-                            "Do you also want to remove the saved settings for this plug-in?"
     IDS_ABOUT_STRING        "This provides the 'thinger' window for those wanting a\nbit of the Winamp3 era irrespective of the skin used.\n\nPlug-in originally by saivert (https://saivert.com/)\n\nAdditional updates for WACUP by Darren Owen aka DrO\n\nBuild date: %s"
     IDS_GHK_STRING          "Thinger: Toggle Thinger window"
     IDS_NXS_THINGER         "Thinger"

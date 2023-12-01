@@ -37,7 +37,7 @@
 
 /* global data */
 #define PLUGIN_INISECTION TEXT("Thinger")
-#define PLUGIN_VERSION "1.2.1"
+#define PLUGIN_VERSION "1.2.2"
 
 // Menu ID's
 UINT WINAMP_NXS_THINGER_MENUID = 48882;
@@ -281,13 +281,8 @@ void quit(void) {
 }
 
 int init(void) {
-	WASABI_API_LNG = plugin.language;/**/
-	// TODO add to lang.h
-	WASABI_API_START_LANG(plugin.hDllInstance, embed_guid);
-
-	wchar_t pluginTitleW[256] = { 0 };
-	StringCchPrintf(pluginTitleW, ARRAYSIZE(pluginTitleW), WASABI_API_LNGSTRINGW(IDS_PLUGIN_NAME), TEXT(PLUGIN_VERSION));
-	plugin.description = (char*)plugin.memmgr->sysDupStr(pluginTitleW);
+	WASABI_API_START_LANG_DESC(plugin.language, plugin.hDllInstance, embed_guid,
+					IDS_PLUGIN_NAME, TEXT(PLUGIN_VERSION), &plugin.description);
 
 	// wParam must have something provided else it returns 0
 	// and then acts like a IPC_GETVERSION call... not good!
@@ -325,20 +320,24 @@ HBITMAP LoadPngFromBMP(const UINT ctrl_img)
 										 L"PNG", &cur_w, &cur_h);
 
 	const int output_width = Scale(0), output_height = Scale(1);
-	const ARGB32* old_bits = (ARGB32*)data;
-	ARGB32* new_bits = ResizeRawImage((ARGB32*)data, cur_w, cur_h,
-									  output_width, output_height);
+	ARGB32* new_bits = (data ? ResizeRawImage((ARGB32*)data, cur_w, cur_h,
+									 output_width, output_height) : NULL);
+	plugin.memmgr->sysFree(data);
 	if (new_bits)
 	{
-		plugin.memmgr->sysFree((void*)old_bits);
 		data = new_bits;
 		cur_w = output_width;
 		cur_h = output_height;
 	}
+	else
+	{
+		data = 0;
+		cur_w = cur_h = 0;
+	}
 
 	// this will free the original bits for us!
-	return BitmapBlendColor(RawToHBitmap(data, cur_w, cur_h, false),
-							WADlg_getColor(WADLG_ITEMBG));
+	return (data ? BitmapBlendColor(RawToHBitmap(data, cur_w, cur_h, false),
+									  WADlg_getColor(WADLG_ITEMBG)) : NULL);
 }
 
 void AddIcon(NxSThingerIconStruct &ntis, const int flag, LPCWSTR text,
@@ -1202,8 +1201,7 @@ extern "C" __declspec( dllexport ) winampGeneralPurposePlugin * winampGetGeneral
 
 extern "C" __declspec(dllexport) int winampUninstallPlugin(HINSTANCE hDllInst, HWND hwndDlg, int param) {
 	// prompt to remove our settings with default as no (just incase)
-	if (MessageBox(hwndDlg, WASABI_API_LNGSTRINGW(IDS_DO_YOU_ALSO_WANT_TO_REMOVE_SETTINGS),
-		(LPWSTR)plugin.description, MB_YESNO | MB_DEFBUTTON2) == IDYES)
+	if (plugin.language->UninstallSettingsPrompt(reinterpret_cast<const wchar_t*>(plugin.description)))
 	{
 		SaveNativeIniString(WINAMP_INI, PLUGIN_INISECTION, 0, 0);
 		no_uninstall = 0;
