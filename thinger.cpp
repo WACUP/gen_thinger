@@ -37,7 +37,7 @@
 
 /* global data */
 #define PLUGIN_INISECTION TEXT("Thinger")
-#define PLUGIN_VERSION "1.2.2"
+#define PLUGIN_VERSION "1.2.3"
 
 // Menu ID's
 UINT WINAMP_NXS_THINGER_MENUID = 48882;
@@ -372,7 +372,7 @@ void UpdateStatusFont(void) {
 	GetClientRect(hWndThinger, &rc);
 	GetIdealFontForArea(hWndThinger, g_hStatusFont, (rc.right - rc.left), Scale(3));
 	SendDlgItemMessage(hWndThinger, IDC_STATUS, WM_SETFONT,
-				(WPARAM)g_hStatusFont, MAKELPARAM(1, 0));
+					   (WPARAM)g_hStatusFont, MAKELPARAM(1, 0));
 }
 
 LRESULT HotkeyCallback(HWND hWnd, const UINT uMsg, const
@@ -431,6 +431,7 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 			wcex.lpszClassName = TEXT("NxSThingerWnd");
 			wcex.hInstance = plugin.hDllInstance;
 			wcex.lpfnWndProc = ThingerWndProc;
+			wcex.hCursor = GetArrowCursor(false);
 			wndclass = RegisterClassEx(&wcex);
 			if (wndclass) {
 				RECT r = { 0 };
@@ -706,12 +707,12 @@ int GetNumVisibleIcons() {
 LRESULT CALLBACK ButtonSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam,
 								UINT_PTR uIdSubclass, DWORD_PTR dwRefData) {
 	switch (uMsg) {
-	case WM_LBUTTONDOWN:
-	case WM_LBUTTONUP:
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONUP:
 		{
-		SendMessage(g_thingerwnd, WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(hWnd), uMsg), (LPARAM)hWnd);
-		break;
-	}
+			SendMessage(g_thingerwnd, WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(hWnd), uMsg), (LPARAM)hWnd);
+			break;
+		}
 		case WM_SYSKEYDOWN:
 		case WM_SYSKEYUP:
 		case WM_SYSCHAR:
@@ -1029,7 +1030,7 @@ void LayoutWindow(HWND hwnd) {
 
 	const HWND parent = GetParent(hwnd);
 	const bool classic_skin = !IsWindow(parent);
-			RECT r = { 0 };
+	RECT r = { 0 };
 	GetClientRect(hwnd, &r);
 
 	const int scaling = (classic_skin ? (dsize + 1) : 1),
@@ -1042,12 +1043,12 @@ void LayoutWindow(HWND hwnd) {
 	SetWindowPos(GetDlgItem(hWndThinger, IDC_LEFTSCROLLBTN), NULL, left_origin,
 							top, width, height, SWP_NOACTIVATE | SWP_NOZORDER);
 
-			const int left = (left_origin + width),
+	const int left = (left_origin + width),
 			  other_left = ((r.right - r.left) - (19 * scaling)),
 			  edge = (other_left - (width * 2));
 
 	SetWindowPos(g_thingerwnd, NULL, left, top, edge,
-						 height, SWP_NOACTIVATE | SWP_NOZORDER);
+				 height, SWP_NOACTIVATE | SWP_NOZORDER);
 
 	SetWindowPos(GetDlgItem(hWndThinger, IDC_RIGHTSCROLLBTN), NULL, (left +
 				 edge), top, width, height, SWP_NOACTIVATE | SWP_NOZORDER);
@@ -1102,9 +1103,14 @@ LRESULT CALLBACK GenWndSubclass(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 	case WM_WINDOWPOSCHANGING: {
 		if ((SWP_NOSIZE | SWP_NOMOVE) != ((SWP_NOSIZE | SWP_NOMOVE) &
 			((LPWINDOWPOS)lParam)->flags) ||
-			(SWP_FRAMECHANGED & ((LPWINDOWPOS)lParam)->flags))
-		{
+			(SWP_FRAMECHANGED & ((LPWINDOWPOS)lParam)->flags)) {
 			LayoutWindow(hwnd);
+		}
+		break;
+	}
+	case WM_SETCURSOR: {
+		if (GetParent(embed.me)) {
+			GetArrowCursor(true);
 		}
 		break;
 	}

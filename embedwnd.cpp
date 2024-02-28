@@ -96,7 +96,7 @@ void DestroyEmbeddedWindow(embedWindowState* embedWindow)
 	{
 		if (main_menu == NULL)
 		{
-		main_menu = GetNativeMenu((WPARAM)0);
+			main_menu = GetNativeMenu((WPARAM)0);
 		}
 
 		if (main_menu != NULL)
@@ -124,7 +124,7 @@ void DestroyEmbeddedWindow(embedWindowState* embedWindow)
 	{
 		if (windows_menu == NULL)
 		{
-		windows_menu = GetNativeMenu((WPARAM)4);
+			windows_menu = GetNativeMenu((WPARAM)4);
 		}
 
 		if (windows_menu != NULL)
