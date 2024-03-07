@@ -4,8 +4,6 @@
 //
 #define IDS_PLUGIN_NAME                 1
 #define IDS_ABOUT_STRING                3
-#define IDS_GHK_STRING                  4
-#define IDS_NXS_BIG_CLOCK               5
 #define IDS_NXS_THINGER                 5
 #define IDB_PLEDIT                      105
 #define IDB_ML                          106

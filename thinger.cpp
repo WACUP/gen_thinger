@@ -22,7 +22,6 @@
 #include <winamp/gen.h>
 #include <winamp/wa_cup.h>
 #include <winamp/wa_msgids.h>
-#include <winamp/wa_hotkeys.h>
 #include <winamp/wa_dlg.h>
 
 #include <loader/loader/paths.h>
@@ -37,7 +36,7 @@
 
 /* global data */
 #define PLUGIN_INISECTION TEXT("Thinger")
-#define PLUGIN_VERSION "1.2.3"
+#define PLUGIN_VERSION "1.2.4"
 
 // Menu ID's
 UINT WINAMP_NXS_THINGER_MENUID = 48882;
@@ -90,8 +89,6 @@ static HWND hWndThinger = NULL;
 
 /* Thinger window */
 static embedWindowState embed = { 0 };
-static genHotkeysAddStruct genhotkey = { 0 };
-static UINT_PTR hotkey_ipc = (UINT_PTR)-1;
 
 LRESULT CALLBACK ThingerWndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK GenWndSubclass(HWND, UINT, WPARAM, LPARAM, UINT_PTR, DWORD_PTR);
@@ -375,16 +372,6 @@ void UpdateStatusFont(void) {
 					   (WPARAM)g_hStatusFont, MAKELPARAM(1, 0));
 }
 
-LRESULT HotkeyCallback(HWND hWnd, const UINT uMsg, const
-					   WPARAM wParam, const LPARAM lParam)
-{
-	if (uMsg == (UINT)hotkey_ipc)
-	{
-		PostMessage(hWnd, WM_COMMAND, WINAMP_NXS_THINGER_MENUID, 0);
-	}
-	return 0;
-}
-
 /* to avoid subclassing this will get a reasonable set of IPC messages */
 void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 						 WPARAM wParam, const LPARAM lParam)
@@ -535,9 +522,6 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 			AddIcon(ntis, THINGER_VIS, TEXT("Toggle Visualisation"), IDC_VIS, IDB_VIS, IDB_VIS_H);
 
 			AddIcon(ntis, THINGER_PREFS, TEXT("Toggle Preferences"), IDC_PREFS, IDB_PREFS, IDB_PREFS_H);
-
-			AddGlobalHotkey(&genhotkey, WASABI_API_LNGSTRINGW_DUP(IDS_GHK_STRING),
-							"NxSThingerToggle", &hotkey_ipc, 0, 0, HotkeyCallback);
 		}
 		else if (lParam == IPC_GET_EMBEDIF_NEW_HWND)
 		{
