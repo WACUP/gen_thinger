@@ -899,7 +899,7 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 
 		/* Paint the background */
-		FillRectWithColour(hdc, &r, WADlg_getColor(WADLG_ITEMBG));
+		FillRectWithColour(hdc, &r, WADlg_getColor(WADLG_ITEMBG), FALSE);
 
 		x = Scale(2) + g_scrolloffset;
 		/* Paint the icons */
