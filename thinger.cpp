@@ -790,8 +790,7 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 	case WM_LBUTTONUP:
 	case WM_RBUTTONUP: {
 		POINT pt = { 0 };
-		GetCursorPos(&pt);
-		ScreenToClient(hWnd, &pt);
+		GetClientCursorPos(hWnd, &pt);
 		pt.x -= g_scrolloffset;
 		const int i = GetIconFromPoint(pt);
 		if (i >= 0 && i<IconList_GetSize()) {
@@ -808,12 +807,12 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 	}
 	case WM_MOUSEMOVE: {
 		int i;
-		POINT pt;
-		RECT r;
-		TRACKMOUSEEVENT tme;
+		POINT pt = { 0 };
+		RECT r = { 0 };
+		TRACKMOUSEEVENT tme = { 0 };
 
-		GetCursorPos(&pt);
-		ScreenToClient(hWnd, &pt);
+		GetClientCursorPos(hWnd, &pt);
+
 		pt.x -= g_scrolloffset;
 		i = GetIconFromPoint(pt);
 
@@ -1024,8 +1023,8 @@ void LayoutWindow(HWND hwnd) {
 			  top = (20 * scaling),
 			  left_origin = (11 * scaling);
 
-	SetWindowPos(GetDlgItem(hWndThinger, IDC_LEFTSCROLLBTN), NULL, left_origin,
-							top, width, height, SWP_NOACTIVATE | SWP_NOZORDER);
+	SetDlgItemPos(hWndThinger, IDC_LEFTSCROLLBTN, NULL, left_origin,
+				  top, width, height, SWP_NOACTIVATE | SWP_NOZORDER);
 
 	const int left = (left_origin + width),
 			  other_left = ((r.right - r.left) - (19 * scaling)),
@@ -1034,10 +1033,10 @@ void LayoutWindow(HWND hwnd) {
 	SetWindowPos(g_thingerwnd, NULL, left, top, edge,
 				 height, SWP_NOACTIVATE | SWP_NOZORDER);
 
-	SetWindowPos(GetDlgItem(hWndThinger, IDC_RIGHTSCROLLBTN), NULL, (left +
-				 edge), top, width, height, SWP_NOACTIVATE | SWP_NOZORDER);
+	SetDlgItemPos(hWndThinger, IDC_RIGHTSCROLLBTN, NULL, (left + edge),
+					top, width, height, SWP_NOACTIVATE | SWP_NOZORDER);
 
-	SetWindowPos(GetDlgItem(hWndThinger, IDC_STATUS), NULL,
+	SetDlgItemPos(hWndThinger, IDC_STATUS, NULL,
 				 left_origin, (top + height), other_left,
 				 sb_width, SWP_NOACTIVATE | SWP_NOZORDER);
 }
