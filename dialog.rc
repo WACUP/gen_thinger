@@ -186,8 +186,8 @@ IDI_NEW                 ICON                    "new_h1.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,2,4,0
- PRODUCTVERSION 1,2,4,0
+ FILEVERSION 1,2,5,0
+ PRODUCTVERSION 1,2,5,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -204,12 +204,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "WACUP"
             VALUE "FileDescription", "General Purpose Plug-in"
-            VALUE "FileVersion", "1.2.4.0"
+            VALUE "FileVersion", "1.2.5.0"
             VALUE "InternalName", "gen_thinger.dll"
             VALUE "LegalCopyright", "Copyright © 2004-5 Saivert, Addtional updates by Darren Owen aka DrO (2021-2024)"
             VALUE "OriginalFilename", "gen_thinger.dll"
             VALUE "ProductName", "Thinger"
-            VALUE "ProductVersion", "1.2.4.0"
+            VALUE "ProductVersion", "1.2.5.0"
         END
     END
     BLOCK "VarFileInfo"

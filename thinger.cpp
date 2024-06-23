@@ -36,7 +36,7 @@
 
 /* global data */
 #define PLUGIN_INISECTION TEXT("Thinger")
-#define PLUGIN_VERSION "1.2.4"
+#define PLUGIN_VERSION "1.2.5"
 
 // Menu ID's
 UINT WINAMP_NXS_THINGER_MENUID = 48882;
@@ -425,9 +425,9 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 				GetWindowRect(hWndThinger, &r);
 
 				MLSKINWINDOW sw = { 0, SKINNEDWND_TYPE_BUTTON, SWS_COMMON_NO_FONT };
-				HWND button = CreateWindow(WC_BUTTON, L"<", WS_CHILD | WS_TABSTOP |
-										   WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWndThinger,
-										   (HMENU)IDC_LEFTSCROLLBTN, plugin.hDllInstance, 0);
+				HWND button = CreateWindowEx(WS_EX_NOPARENTNOTIFY, WC_BUTTON, L"<", WS_CHILD | WS_TABSTOP |
+														WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWndThinger,
+														(HMENU)IDC_LEFTSCROLLBTN, plugin.hDllInstance, 0);
 				if (IsWindow(button))
 				{
 					sw.hwndToSkin = button;
@@ -437,12 +437,12 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 					Subclass(button, ButtonSubclass);
 				}
 
-				g_thingerwnd = CreateWindow((LPCTSTR)wndclass, PLUGIN_INISECTION, WS_CHILD | WS_VISIBLE,
-											0, 0, 0, 0, hWndThinger, NULL, plugin.hDllInstance, NULL);
+				g_thingerwnd = CreateWindowEx(WS_EX_NOPARENTNOTIFY, (LPCTSTR)wndclass, PLUGIN_INISECTION, WS_CHILD |
+											  WS_VISIBLE, 0, 0, 0, 0, hWndThinger, NULL, plugin.hDllInstance, NULL);
 
-				button = CreateWindow(WC_BUTTON, L">", WS_CHILD | WS_TABSTOP |
-									  WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWndThinger,
-									  (HMENU)IDC_RIGHTSCROLLBTN, plugin.hDllInstance, 0);
+				button = CreateWindowEx(WS_EX_NOPARENTNOTIFY, WC_BUTTON, L">", WS_CHILD | WS_TABSTOP |
+												   WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWndThinger,
+												   (HMENU)IDC_RIGHTSCROLLBTN, plugin.hDllInstance, 0);
 				if (IsWindow(button))
 				{
 					sw.hwndToSkin = button;
@@ -452,8 +452,8 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 					Subclass(button, ButtonSubclass);
 				}
 
-				button = CreateWindow(WC_STATIC, 0, WS_CHILD | WS_VISIBLE | SS_CENTERIMAGE,
-									  0, 0, 0, 0, hWndThinger, (HMENU)IDC_STATUS, (HINSTANCE)0, 0);
+				button = CreateWindowEx(WS_EX_NOPARENTNOTIFY, WC_STATIC, 0, WS_CHILD | WS_VISIBLE | SS_CENTERIMAGE,
+													  0, 0, 0, 0, hWndThinger, (HMENU)IDC_STATUS, (HINSTANCE)0, 0);
 				if (IsWindow(button)) {
 					sw.skinType = SKINNEDWND_TYPE_STATIC;
 					sw.hwndToSkin = button;
