@@ -36,7 +36,7 @@
 
 /* global data */
 #define PLUGIN_INISECTION TEXT("Thinger")
-#define PLUGIN_VERSION "1.2.6"
+#define PLUGIN_VERSION "1.2.7"
 
 // Menu ID's
 UINT WINAMP_NXS_THINGER_MENUID = 48882;
@@ -422,14 +422,12 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 				RECT r = { 0 };
 				GetWindowRect(hWndThinger, &r);
 
-				MLSKINWINDOW sw = { 0, SKINNEDWND_TYPE_BUTTON, SWS_COMMON_NO_FONT };
 				HWND button = CreateWindowEx(WS_EX_NOPARENTNOTIFY, WC_BUTTON, L"<", WS_CHILD | WS_TABSTOP |
 														WS_VISIBLE | BS_OWNERDRAW, 0, 0, 0, 0, hWndThinger,
 														(HMENU)IDC_LEFTSCROLLBTN, plugin.hDllInstance, 0);
 				if (IsWindow(button))
 				{
-					sw.hwndToSkin = button;
-					SkinWindow(&sw);
+					SkinWindow(button, SKINNEDWND_TYPE_BUTTON, SWS_COMMON_NO_FONT, 0);
 
 					/* Subclass buttons so we get notified when they are down/up */
 					Subclass(button, ButtonSubclass);
@@ -443,8 +441,7 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 												   (HMENU)IDC_RIGHTSCROLLBTN, plugin.hDllInstance, 0);
 				if (IsWindow(button))
 				{
-					sw.hwndToSkin = button;
-					SkinWindow(&sw);
+					SkinWindow(button, SKINNEDWND_TYPE_BUTTON, SWS_COMMON_NO_FONT, 0);
 
 					/* Subclass buttons so we get notified when they are down/up */
 					Subclass(button, ButtonSubclass);
@@ -453,9 +450,7 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 				button = CreateWindowEx(WS_EX_NOPARENTNOTIFY, WC_STATIC, 0, WS_CHILD | WS_VISIBLE | SS_CENTERIMAGE,
 													  0, 0, 0, 0, hWndThinger, (HMENU)IDC_STATUS, (HINSTANCE)0, 0);
 				if (IsWindow(button)) {
-					sw.skinType = SKINNEDWND_TYPE_STATIC;
-					sw.hwndToSkin = button;
-					SkinWindow(&sw);
+					SkinWindow(button, SKINNEDWND_TYPE_STATIC, SWS_COMMON_NO_FONT, 0);
 
 					/* Subclass buttons so we get notified when they are down/up */
 					Subclass(button, ButtonSubclass);
@@ -531,7 +526,7 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 			}
 		}
 		else if (lParam == IPC_SKIN_CHANGED_NEW) {
-			RefreshInnerWindow(hWndThinger);
+			RefreshInnerWindow(hWndThinger, false);
 		}
 	}
 	
