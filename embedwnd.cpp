@@ -8,7 +8,7 @@
 // internal variables
 //HMENU main_menu = 0, windows_menu = 0;
 int height = 0, width = 0;
-BOOL visible = FALSE, old_visible = FALSE, self_update = FALSE;
+BOOL visible = TRUE, old_visible = TRUE, self_update = FALSE;
 RECT initial[2] = {0};
 
 HWND CreateEmbeddedWindow(embedWindowState* embedWindow, const GUID
@@ -81,7 +81,7 @@ void DestroyEmbeddedWindow(embedWindowState* embedWindow)
 	if (old_visible != visible)
 	{
 		SaveNativeIniString(PLUGIN_INI, INI_FILE_SECTION,
-							L"config_show", (visible ? L"1" : NULL));	}
+							L"config_show", (visible ? NULL : L"0")); }
 
 	if (initial[1].top != height || initial[1].left != width)
 	{

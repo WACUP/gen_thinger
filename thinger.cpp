@@ -36,7 +36,7 @@
 
 /* global data */
 #define PLUGIN_INISECTION TEXT("Thinger")
-#define PLUGIN_VERSION "1.2.7"
+#define PLUGIN_VERSION "1.2.8"
 
 // Menu ID's
 UINT WINAMP_NXS_THINGER_MENUID = 48882;
@@ -690,6 +690,15 @@ LRESULT CALLBACK ButtonSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 			SendMessage(g_thingerwnd, WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(hWnd), uMsg), (LPARAM)hWnd);
 			break;
 		}
+		case WM_CLOSE:
+		{
+			// so the frame close action will work we've got
+			// to check for this & pass it on otherwise it's
+			// going to require 2 initial clicks to respond!
+			PostMessage(g_thingerwnd, uMsg, wParam, lParam);
+			// & prevent the action then closing this button
+			return 1;
+		}
 		case WM_SYSKEYDOWN:
 		case WM_SYSKEYUP:
 		case WM_SYSCHAR:
@@ -844,7 +853,7 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 	}
 	case WM_GETDLGCODE:
 	{
-		SetWindowLongPtr(hWnd, DWLP_MSGRESULT, TRUE);
+		SetWindowLongPtr(hWnd, DWLP_MSGRESULT, (LONG_PTR)TRUE);
 		return DLGC_WANTALLKEYS;
 	}
 	case WM_SYSKEYDOWN:
@@ -1017,21 +1026,25 @@ void LayoutWindow(HWND hwnd) {
 			  left_origin = (11 * scaling);
 
 	SetDlgItemPos(hWndThinger, IDC_LEFTSCROLLBTN, NULL, left_origin,
-				  top, width, height, SWP_NOACTIVATE | SWP_NOZORDER);
+				  top, width, height, SWP_NOACTIVATE | SWP_NOZORDER |
+				  SWP_NOSENDCHANGING |SWP_ASYNCWINDOWPOS);
 
 	const int left = (left_origin + width),
 			  other_left = ((r.right - r.left) - (19 * scaling)),
 			  edge = (other_left - (width * 2));
 
 	SetWindowPos(g_thingerwnd, NULL, left, top, edge,
-				 height, SWP_NOACTIVATE | SWP_NOZORDER);
+				 height, SWP_NOACTIVATE | SWP_NOZORDER |
+				 SWP_NOSENDCHANGING | SWP_ASYNCWINDOWPOS);
 
 	SetDlgItemPos(hWndThinger, IDC_RIGHTSCROLLBTN, NULL, (left + edge),
-					top, width, height, SWP_NOACTIVATE | SWP_NOZORDER);
+				  top, width, height, SWP_NOACTIVATE | SWP_NOZORDER |
+				  SWP_NOSENDCHANGING | SWP_ASYNCWINDOWPOS);
 
 	SetDlgItemPos(hWndThinger, IDC_STATUS, NULL,
 				 left_origin, (top + height), other_left,
-				 sb_width, SWP_NOACTIVATE | SWP_NOZORDER);
+				 sb_width, SWP_NOACTIVATE | SWP_NOZORDER |
+				 SWP_NOSENDCHANGING | SWP_ASYNCWINDOWPOS);
 }
 
 LRESULT CALLBACK GenWndSubclass(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam,
