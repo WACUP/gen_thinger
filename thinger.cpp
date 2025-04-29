@@ -36,7 +36,7 @@
 
 /* global data */
 #define PLUGIN_INISECTION TEXT("Thinger")
-#define PLUGIN_VERSION "1.2.8"
+#define PLUGIN_VERSION "1.2.9"
 
 // Menu ID's
 UINT WINAMP_NXS_THINGER_MENUID = 48882;
@@ -209,7 +209,7 @@ void ProcessMenuResult(UINT command, HWND parent) {
 		}
 		case ID__ABOUT: {
 			wchar_t message[2048] = { 0 };
-			StringCchPrintf(message, ARRAYSIZE(message), WASABI_API_LNGSTRINGW(IDS_ABOUT_STRING), TEXT(__DATE__));
+			PrintfCch(message, ARRAYSIZE(message), LangString(IDS_ABOUT_STRING), TEXT(__DATE__));
 			AboutMessageBox(plugin.hwndParent, message, (LPWSTR)plugin.description);
 			break;
 		}
@@ -248,7 +248,7 @@ void SetupConfigMenu(HMENU popup)
 }
 
 void config(void) {
-	//HMENU hMenu = WASABI_API_LOADMENUW(IDR_CONTEXTMENU);
+	//HMENU hMenu = LangLoadMenu(IDR_CONTEXTMENU);
 	HMENU popup = GetSubMenu(LoadMenu(plugin.hDllInstance, TEXT("MENU1")), 0);
 
 	AddItemToMenu2(popup, 0, (LPWSTR)plugin.description, 0, 1);
@@ -278,8 +278,8 @@ void quit(void) {
 }
 
 int init(void) {
-	WASABI_API_START_LANG_DESC(plugin.language, plugin.hDllInstance, embed_guid,
-					IDS_PLUGIN_NAME, TEXT(PLUGIN_VERSION), &plugin.description);
+	StartPluginLangWithDesc(plugin.hDllInstance, embed_guid, IDS_PLUGIN_NAME,
+								  TEXT(PLUGIN_VERSION), &plugin.description);
 
 	// wParam must have something provided else it returns 0
 	// and then acts like a IPC_GETVERSION call... not good!
@@ -312,14 +312,13 @@ HBITMAP LoadPngFromBMP(const UINT ctrl_img)
 {
 	// TODO need to ensure this is re-built on skin changes
 	int cur_w = 0, cur_h = 0;
-	ARGB32 *data = LoadImageFromResource(plugin.language, WASABI_API_LNG_HINST,
-										 WASABI_API_ORIG_HINST, ctrl_img,
-										 L"PNG", &cur_w, &cur_h);
+	ARGB32 *data = LoadImageFromResource(WASABI_API_LNG_HINST, WASABI_API_ORIG_HINST,
+												   ctrl_img, L"PNG", &cur_w, &cur_h);
 
 	const int output_width = Scale(0), output_height = Scale(1);
 	ARGB32* new_bits = (data ? ResizeRawImage((ARGB32*)data, cur_w, cur_h,
 									 output_width, output_height) : NULL);
-	plugin.memmgr->sysFree(data);
+	SafeFree(data);
 	if (new_bits)
 	{
 		data = new_bits;
@@ -400,8 +399,8 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 			// finally we add menu items to the main right-click menu and the views menu
 			// with Modern skins which support showing the views menu for accessing windows
 			wchar_t lang_string[32] = { 0 };
-			AddEmbeddedWindowToMenus(WINAMP_NXS_THINGER_MENUID, WASABI_API_LNGSTRINGW_BUF(IDS_NXS_THINGER,
-													   lang_string, ARRAYSIZE(lang_string)), visible, -1);
+			AddEmbeddedWindowToMenus(WINAMP_NXS_THINGER_MENUID, LngStringCopy(IDS_NXS_THINGER,
+										   lang_string, ARRAYSIZE(lang_string)), visible, -1);
 
 			// now we will attempt to create an embedded window which adds its own main menu entry
 			// and related keyboard accelerator (like how the media library window is integrated)
@@ -1196,9 +1195,8 @@ extern "C" __declspec( dllexport ) winampGeneralPurposePlugin * winampGetGeneral
 
 extern "C" __declspec(dllexport) int winampUninstallPlugin(HINSTANCE hDllInst, HWND hwndDlg, int param) {
 	// prompt to remove our settings with default as no (just incase)
-	if (plugin.language->UninstallSettingsPrompt(reinterpret_cast<const wchar_t*>(plugin.description)))
+	if (UninstallSettingsPrompt(reinterpret_cast<const wchar_t*>(plugin.description), WINAMP_INI, PLUGIN_INISECTION))
 	{
-		SaveNativeIniString(WINAMP_INI, PLUGIN_INISECTION, 0, 0);
 		no_uninstall = 0;
 	}
 
