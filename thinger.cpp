@@ -36,7 +36,7 @@
 
 /* global data */
 #define PLUGIN_INISECTION TEXT("Thinger")
-#define PLUGIN_VERSION "1.2.9"
+#define PLUGIN_VERSION "1.2.10"
 
 // Menu ID's
 UINT WINAMP_NXS_THINGER_MENUID = 48882;
@@ -88,7 +88,7 @@ static int upscaling = 1, dsize = 0, no_uninstall = 1;
 static HWND hWndThinger = NULL;
 
 /* Thinger window */
-static embedWindowState embed = { 0 };
+static embedWindowState *embed;
 
 LRESULT CALLBACK ThingerWndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK GenWndSubclass(HWND, UINT, WPARAM, LPARAM, UINT_PTR, DWORD_PTR);
@@ -208,7 +208,7 @@ void ProcessMenuResult(UINT command, HWND parent) {
 			break;
 		}
 		case ID__ABOUT: {
-			wchar_t message[2048] = { 0 };
+			wchar_t message[2048]/* = { 0 }*/;
 			PrintfCch(message, ARRAYSIZE(message), LangString(IDS_ABOUT_STRING), TEXT(__DATE__));
 			AboutMessageBox(plugin.hwndParent, message, (LPWSTR)plugin.description);
 			break;
@@ -273,7 +273,7 @@ void quit(void) {
 	if (no_uninstall)
 	{
 		/* Update position and size */
-		DestroyEmbeddedWindow(&embed);
+		DestroyEmbeddedWindow(embed);
 	}
 }
 
@@ -398,14 +398,19 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 
 			// finally we add menu items to the main right-click menu and the views menu
 			// with Modern skins which support showing the views menu for accessing windows
-			wchar_t lang_string[32] = { 0 };
+			wchar_t lang_string[32]/* = { 0 }*/;
 			AddEmbeddedWindowToMenus(WINAMP_NXS_THINGER_MENUID, LngStringCopy(IDS_NXS_THINGER,
 										   lang_string, ARRAYSIZE(lang_string)), visible, -1);
 
+			if (!embed)
+			{
+				embed = (embedWindowState*)SafeMalloc(sizeof(embedWindowState));
+			}
+
 			// now we will attempt to create an embedded window which adds its own main menu entry
 			// and related keyboard accelerator (like how the media library window is integrated)
-			embed.flags |= EMBED_FLAGS_SCALEABLE_WND | EMBED_FLAGS_NO_CHILD_SIZING;	// double-size support!
-			hWndThinger = CreateEmbeddedWindow(&embed, embed_guid, lang_string);
+			embed->flags |= EMBED_FLAGS_SCALEABLE_WND | EMBED_FLAGS_NO_CHILD_SIZING;	// double-size support!
+			hWndThinger = CreateEmbeddedWindow(embed, embed_guid, lang_string);
 
 			/* Subclass skinned window frame */
 			Subclass(hWndThinger, GenWndSubclass);
@@ -533,7 +538,7 @@ void __cdecl MessageProc(HWND hWnd, const UINT uMsg, const
 	// proceedure of the subclass can process it. with multiple windows then this
 	// would need to be duplicated for the number of embedded windows your handling
 	HandleEmbeddedWindowWinampWindowMessages(hWndThinger, WINAMP_NXS_THINGER_MENUID,
-											 &embed, hWnd, uMsg, wParam, lParam);
+												 embed, hWnd, uMsg, wParam, lParam);
 }
 
 /* Subclass used to intercept our IPC messages and be
@@ -1097,7 +1102,7 @@ LRESULT CALLBACK GenWndSubclass(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 		break;
 	}
 	case WM_SETCURSOR: {
-		if (GetParent(embed.me)) {
+		if (embed && GetParent(embed->me)) {
 			GetArrowCursor(true);
 		}
 		break;
