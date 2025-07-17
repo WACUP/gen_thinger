@@ -17,7 +17,6 @@
 #include <windowsx.h>
 #include <commctrl.h>
 #include <shellapi.h>
-#include <strsafe.h>
 
 #include <winamp/gen.h>
 #include <winamp/wa_cup.h>
