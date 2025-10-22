@@ -68,7 +68,11 @@ void DestroyEmbeddedWindow(embedWindowState* embedWindow)
 	// skip saving the current window position otherwise
 	// we have the issue with windows being in the wrong
 	// places after modern -> exit -> modern -> classic
+#ifndef _WIN64
 	if (embedWindow && !embedWindow->wasabi_window &&
+#else
+	if (embedWindow && /*!embedWindow->wasabi_window &&*/
+#endif
 			!EqualRect(&initial[0], &embedWindow->r))
 	{
 		SaveNativeIniInt(PLUGIN_INI, INI_FILE_SECTION, L"config_x", embedWindow->r.left);
@@ -196,6 +200,7 @@ LRESULT HandleEmbeddedWindowChildMessages(HWND embedWnd, UINT menuId, HWND hwnd,
 		visible = 0;
 		UpdateEmbeddedWindowsMenu((UINT)menuId, visible);
 	}
+#ifndef _WIN64
 	else if (message == WM_WINDOWPOSCHANGING)
 	{
 		/*
@@ -213,6 +218,7 @@ LRESULT HandleEmbeddedWindowChildMessages(HWND embedWnd, UINT menuId, HWND hwnd,
 						 SWP_NOSENDCHANGING | SWP_ASYNCWINDOWPOS);
 		}
 	}
+#endif
 	return 0;
 }
 

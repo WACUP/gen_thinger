@@ -35,7 +35,7 @@
 
 /* global data */
 #define PLUGIN_INISECTION TEXT("Thinger")
-#define PLUGIN_VERSION "1.2.10"
+#define PLUGIN_VERSION "1.2.11"
 
 // Menu ID's
 UINT WINAMP_NXS_THINGER_MENUID = 48882;
@@ -788,7 +788,6 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 				PostMessage(plugin.hwndParent, WM_COMMAND, WINAMP_OPTIONS_PREFS, 0);
 				break;
 			}
-			break;
 		}
 		break;
 	}
