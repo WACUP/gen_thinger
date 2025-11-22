@@ -916,7 +916,7 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 #ifdef USE_TRANSPARENTBLT
 					HDC icon_hdc;
 					HBITMAP icon_hbm, icon_oldhbm;
-					BITMAP bm = {0};
+					BITMAP bm/* = {0}*/;
 
 					icon_hbm = iHighlightItem==i ? lpntis->hBitmapHighlight : lpntis->hBitmap;
 						
@@ -925,11 +925,12 @@ LRESULT CALLBACK ThingerWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 					icon_oldhbm = (HBITMAP)SelectObject(icon_hdc, icon_hbm);
 
 					// Get bitmap dimensions
-					GetObject(icon_hbm, sizeof(BITMAP), (LPSTR)&bm);
-
-					// Call the TransparentBlt GDI function
-					GdiTransparentBlt(hdc, x, 0, Scale(0), Scale(1), icon_hdc, 0,
-										0, bm.bmWidth, bm.bmHeight, /*0/*/0x00FF00FF/**/);
+					if (GetObject(icon_hbm, sizeof(BITMAP), (LPSTR)&bm) == sizeof(BITMAP))
+					{
+						// Call the TransparentBlt GDI function
+						GdiTransparentBlt(hdc, x, 0, Scale(0), Scale(1), icon_hdc, 0,
+											0, bm.bmWidth, bm.bmHeight, /*0/*/0x00FF00FF/**/);
+					}
 
 					// Clean up
 					SelectObject(icon_hdc, icon_oldhbm);
@@ -1147,7 +1148,7 @@ void DrawTransparentBitmap(HDC hDC, HBITMAP hBitmap, int x, int y, COLORREF crCo
 	HDC dcImage, dcTrans;
 	HGDIOBJ hOldBitmapImage;
 	HBITMAP bitmapTrans;
-	BITMAP bm = {0};
+	BITMAP bm/* = {0}*/;
 	HGDIOBJ hOldBitmapTrans;
 	int nWidth;
 	int nHeight;
@@ -1162,9 +1163,15 @@ void DrawTransparentBitmap(HDC hDC, HBITMAP hBitmap, int x, int y, COLORREF crCo
 	// Create the mask bitmap
 	bitmapTrans = NULL;
 	// get the image dimensions
-	GetObject(hBitmap, sizeof(BITMAP), (LPSTR)&bm);
-	nWidth = bm.bmWidth;
-	nHeight = bm.bmHeight;
+	if (GetObject(hBitmap, sizeof(BITMAP), (LPSTR)&bm) == sizeof(BITMAP))
+	{
+		nWidth = bm.bmWidth;
+		nHeight = bm.bmHeight;
+	}
+	else
+	{
+		nWidth = nHeight = 0;
+	}
 	bitmapTrans = CreateBitmap(nWidth, nHeight, 1, 1, NULL);
 	
 	// Select the mask bitmap into the appropriate dc
